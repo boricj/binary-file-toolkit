@@ -1,0 +1,87 @@
+name: "ci"
+
+on:
+  push:
+    branches:
+      - "*"
+    tags:
+      - "v*"
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      checks: "write"
+      contents: "read"
+    steps:
+      -
+        name: "Checkout"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      -
+        name: "Setup JDK"
+        uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: "temurin"
+          cache: "maven"
+      -
+        name: "Build"
+        run: mvn --batch-mode --update-snapshots verify
+      -
+        name: "Upload artifacts"
+        uses: actions/upload-artifact@v4
+        with:
+          name: "binary-file-toolkit"
+          path: "dist/*"
+          if-no-files-found: "error"
+        if: ${{ !cancelled() }}
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs:
+      - "build"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: "write"
+      packages: "write"
+    steps:
+      -
+        name: "Checkout"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      -
+        name: "Setup JDK"
+        uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: "temurin"
+          cache: "maven"
+      -
+        name: "Setup Maven settings.xml"
+        uses: s4u/maven-settings-action@v3.1.0
+        with:
+          servers: '[{"id":"github","configuration":{"httpHeaders":{"property":{"name":"Authorization","value":"Bearer ${{ secrets.GITHUB_TOKEN }}"}}}}]'
+      -
+        name: "Deploy"
+        run: mvn --batch-mode --update-snapshots deploy
+      -
+        name: "Generate release notes"
+        uses: orhun/git-cliff-action@v4.4.2
+        with:
+          config: cliff.toml
+          args: --verbose --latest --no-exec
+        env:
+          OUTPUT: "release-notes.md"
+      -
+        name: "GitHub release"
+        uses: ncipollo/release-action@v1.12.0
+        with:
+          artifacts: "dist/*"
+          draft: true
+          bodyFile: "release-notes.md"
