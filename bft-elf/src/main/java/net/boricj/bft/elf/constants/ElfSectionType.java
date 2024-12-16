@@ -14,6 +14,8 @@
 package net.boricj.bft.elf.constants;
 
 import net.boricj.bft.elf.ElfSection;
+import net.boricj.bft.elf.machines.mips.ElfAbiFlags_Mips;
+import net.boricj.bft.elf.machines.mips.ElfRegInfo_Mips;
 import net.boricj.bft.elf.sections.ElfGroup;
 import net.boricj.bft.elf.sections.ElfNoBits;
 import net.boricj.bft.elf.sections.ElfNullSection;
@@ -32,6 +34,9 @@ public enum ElfSectionType {
 	SHT_NOBITS(8, null, ElfNoBits.class),
 	SHT_REL(9, null, ElfRelTable.class),
 	SHT_GROUP(17, null, ElfGroup.class),
+
+	SHT_MIPS_REGINFO(0x70000006, ElfMachine.EM_MIPS, ElfRegInfo_Mips.class),
+	SHT_MIPS_ABIFLAGS(0x7000002a, ElfMachine.EM_MIPS, ElfAbiFlags_Mips.class),
 	;
 
 	private final int value;

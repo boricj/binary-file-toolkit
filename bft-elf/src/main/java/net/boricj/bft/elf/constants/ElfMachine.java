@@ -15,10 +15,13 @@ package net.boricj.bft.elf.constants;
 
 import net.boricj.bft.elf.ElfSectionFlags;
 import net.boricj.bft.elf.machines.i386.ElfRelocationType_i386;
+import net.boricj.bft.elf.machines.mips.ElfRelocationType_Mips;
+import net.boricj.bft.elf.machines.mips.ElfSectionFlags_Mips;
 
 public enum ElfMachine {
 	EM_NONE((short) 0, "None", ElfSectionFlags.class, null),
 	EM_386((short) 3, "Intel 80386", ElfSectionFlags.class, ElfRelocationType_i386.class),
+	EM_MIPS((short) 8, "MIPS R3000", ElfSectionFlags_Mips.class, ElfRelocationType_Mips.class),
 	;
 
 	private final short value;
