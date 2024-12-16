@@ -14,9 +14,11 @@
 package net.boricj.bft.elf.constants;
 
 import net.boricj.bft.elf.ElfSectionFlags;
+import net.boricj.bft.elf.machines.i386.ElfRelocationType_i386;
 
 public enum ElfMachine {
 	EM_NONE((short) 0, "None", ElfSectionFlags.class, null),
+	EM_386((short) 3, "Intel 80386", ElfSectionFlags.class, ElfRelocationType_i386.class),
 	;
 
 	private final short value;
