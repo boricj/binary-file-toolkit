@@ -10,6 +10,7 @@
 	<modules>
 		<module>bft-base</module>
 		<module>bft-base-tests</module>
+		<module>bft-elf</module>
 	</modules>
 	<scm>
 		<connection>scm:git:https://github.com/boricj/binary-file-toolkit.git</connection>

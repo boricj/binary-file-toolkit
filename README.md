@@ -6,6 +6,7 @@ This is a set of Java libraries for manipulating file formats used by toolchains
 
 * `bft-base`: library containing common base classes
 * `bft-base-tests`: library containing common base test classes
+* `bft-elf`: library for the _Executable and Linkable File_ specification
 
 ## Ethos
 
