@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import net.boricj.bft.ImmutableList;
+import net.boricj.bft.IndirectList;
 import net.boricj.bft.elf.ElfFile;
 import net.boricj.bft.elf.ElfHeader;
 import net.boricj.bft.elf.ElfSection;
@@ -43,7 +43,7 @@ import static net.boricj.bft.elf.constants.ElfSymbolType.STT_NOTYPE;
 import static net.boricj.bft.elf.constants.ElfSymbolType.STT_SECTION;
 import static net.boricj.bft.elf.constants.ElfSymbolVisibility.STV_DEFAULT;
 
-public class ElfSymbolTable extends ElfSection implements ImmutableList<ElfSymbol> {
+public class ElfSymbolTable extends ElfSection implements IndirectList<ElfSymbol> {
 	public class ElfSymbol {
 		private final String name;
 		private final long st_value;

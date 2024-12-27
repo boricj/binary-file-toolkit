@@ -24,7 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import net.boricj.bft.ImmutableList;
+import net.boricj.bft.IndirectList;
 import net.boricj.bft.elf.ElfFile;
 import net.boricj.bft.elf.ElfHeader;
 import net.boricj.bft.elf.ElfSection;
@@ -36,7 +36,7 @@ import net.boricj.bft.elf.constants.ElfSectionType;
 import net.boricj.bft.elf.sections.ElfRelaTable.ElfRela;
 import net.boricj.bft.elf.sections.ElfSymbolTable.ElfSymbol;
 
-public class ElfRelaTable extends ElfSection implements ImmutableList<ElfRela> {
+public class ElfRelaTable extends ElfSection implements IndirectList<ElfRela> {
 	public class ElfRela {
 		private final long r_offset;
 		private final ElfSymbol symbol;

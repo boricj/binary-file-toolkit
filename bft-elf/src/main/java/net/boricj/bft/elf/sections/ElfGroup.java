@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import net.boricj.bft.ImmutableList;
+import net.boricj.bft.IndirectList;
 import net.boricj.bft.elf.ElfFile;
 import net.boricj.bft.elf.ElfSection;
 import net.boricj.bft.elf.ElfSectionFlags;
@@ -30,7 +30,7 @@ import net.boricj.bft.elf.ElfSectionTable;
 import net.boricj.bft.elf.constants.ElfSectionType;
 import net.boricj.bft.elf.sections.ElfSymbolTable.ElfSymbol;
 
-public class ElfGroup extends ElfSection implements ImmutableList<ElfSection> {
+public class ElfGroup extends ElfSection implements IndirectList<ElfSection> {
 	private final ElfSymbolTable symbolTable;
 	private final ElfSymbol signature;
 	private final int flags;
