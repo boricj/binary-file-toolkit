@@ -34,6 +34,7 @@ public interface Writable {
 	public static void write(Collection<Writable> writables, OutputStream outputStream, int padding)
 			throws IOException {
 		List<Writable> sortedWritables = writables.stream()
+				.filter(w -> w.getLength() > 0)
 				.sorted(Comparator.comparingLong(w -> w.getOffset()))
 				.collect(Collectors.toList());
 
@@ -44,7 +45,7 @@ public interface Writable {
 			long offset = writable.getOffset();
 			long length = writable.getLength();
 
-			if (previousOffset + previousLength > offset + length && length > 0) {
+			if (previousOffset + previousLength > offset) {
 				String fmt = "%s (offset: %d, length: %d) overlaps with %s (offset: %d, length %d)";
 				String msg =
 						String.format(fmt, previousWritable, previousOffset, previousLength, writable, offset, length);
@@ -63,9 +64,9 @@ public interface Writable {
 			}
 
 			long offset = mos.getCount();
+			long length = writable.getLength();
 			writable.write(mos);
 			long bytesWritten = mos.getCount() - offset;
-			long length = writable.getLength();
 
 			if (bytesWritten != length) {
 				String fmt = "%s has length %d bytes, wrote %d bytes";
