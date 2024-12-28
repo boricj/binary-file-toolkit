@@ -19,11 +19,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 public class TestUtils {
 	public static void compare(InputStream expected, Collection<Writable> writables) throws IOException {
+		compare(expected, writables, Collections.emptyMap());
+	}
+
+	public static void compare(InputStream expected, Collection<Writable> writables, Map<Integer, byte[]> patches)
+			throws IOException {
 		File outputFile = File.createTempFile("output", ".bin");
 		outputFile.deleteOnExit();
 		FileOutputStream fos = new FileOutputStream(outputFile);
@@ -32,6 +39,10 @@ public class TestUtils {
 
 		byte[] expectedBytes = expected.readAllBytes();
 		byte[] actualBytes = Files.readAllBytes(outputFile.toPath());
+		for (Map.Entry<Integer, byte[]> entry : patches.entrySet()) {
+			byte[] patch = entry.getValue();
+			System.arraycopy(patch, 0, actualBytes, entry.getKey(), patch.length);
+		}
 
 		assertArrayEquals(expectedBytes, actualBytes);
 	}
