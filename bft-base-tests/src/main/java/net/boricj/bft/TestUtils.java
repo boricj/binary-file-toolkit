@@ -13,6 +13,7 @@
  */
 package net.boricj.bft;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -33,9 +34,11 @@ public class TestUtils {
 			throws IOException {
 		File outputFile = File.createTempFile("output", ".bin");
 		outputFile.deleteOnExit();
-		FileOutputStream fos = new FileOutputStream(outputFile);
-
-		Writable.write(writables, fos);
+		try (FileOutputStream fos = new FileOutputStream(outputFile)) {
+			try (BufferedOutputStream bos = new BufferedOutputStream(fos)) {
+				Writable.write(writables, bos);
+			}
+		}
 
 		byte[] expectedBytes = expected.readAllBytes();
 		byte[] actualBytes = Files.readAllBytes(outputFile.toPath());
