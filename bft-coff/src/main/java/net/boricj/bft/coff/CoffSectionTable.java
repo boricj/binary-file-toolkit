@@ -19,7 +19,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -37,6 +39,7 @@ public class CoffSectionTable implements IndirectList<CoffSection>, Writable {
 
 	private final CoffFile coff;
 	private final List<CoffSection> table = new ArrayList<>();
+	private final Map<CoffSection, Integer> reverseLookup = new IdentityHashMap<>();
 
 	protected CoffSectionTable(CoffFile coff, CoffFile.Builder builder) {
 		this.coff = coff;
@@ -72,7 +75,7 @@ public class CoffSectionTable implements IndirectList<CoffSection>, Writable {
 			if (numberOfRelocations >= EXTENDED_RELOCATIONS_COUNT) {
 				numberOfRelocations = EXTENDED_RELOCATIONS_COUNT;
 				characteristics |= CoffSectionFlags.IMAGE_SCN_LNK_NRELOC_OVFL;
-			} 
+			}
 
 			dataOutput.write(stringTable.encodeSecName(section.getName()));
 			dataOutput.writeInt(section.getPhysicalAddress());
@@ -130,23 +133,18 @@ public class CoffSectionTable implements IndirectList<CoffSection>, Writable {
 	}
 
 	@Override
-	public List<CoffSection> getElements() {
-		return Collections.unmodifiableList(table);
-	}
-
-	@Override
 	public boolean add(CoffSection section) {
 		Objects.requireNonNull(section);
 
 		if (section.getCoffFile() != coff) {
 			throw new NoSuchElementException("section doesn't belong to this COFF file");
 		}
-		if (table.contains(section)) {
+		if (contains(section)) {
 			throw new IllegalStateException("section is already present inside section table");
 		}
 
-		table.add(section);
-		return true;
+		reverseLookup.put(section, size() + 1);
+		return table.add(section);
 	}
 
 	@Override
@@ -155,12 +153,18 @@ public class CoffSectionTable implements IndirectList<CoffSection>, Writable {
 	}
 
 	@Override
-	public int indexOf(Object o) {
-		int idx = table.indexOf(o);
-		if (idx != -1) {
-			idx += 1;
-		}
+	public boolean contains(Object object) {
+		return reverseLookup.containsKey(object);
+	}
 
-		return idx;
+	@Override
+	public int indexOf(Object object) {
+		return reverseLookup.getOrDefault(object, -1);
+	}
+
+	@Override
+	public List<CoffSection> getElements() {
+		return Collections.unmodifiableList(table);
+	}
 	}
 }
