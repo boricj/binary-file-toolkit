@@ -166,5 +166,9 @@ public class CoffSectionTable implements IndirectList<CoffSection>, Writable {
 	public List<CoffSection> getElements() {
 		return Collections.unmodifiableList(table);
 	}
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName();
 	}
 }

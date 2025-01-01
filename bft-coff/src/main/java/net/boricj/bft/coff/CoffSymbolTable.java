@@ -424,4 +424,9 @@ public class CoffSymbolTable implements IndirectList<CoffSymbol>, Writable {
 	public int indexOf(Object object) {
 		return reverseLookup.getOrDefault(object, -1);
 	}
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName();
+	}
 }

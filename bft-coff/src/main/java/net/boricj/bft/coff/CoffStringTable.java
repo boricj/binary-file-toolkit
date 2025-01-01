@@ -200,4 +200,9 @@ public class CoffStringTable implements Iterable<Integer>, Writable {
 			return decodeNullTerminatedString(bytes, charset);
 		}
 	}
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName();
+	}
 }

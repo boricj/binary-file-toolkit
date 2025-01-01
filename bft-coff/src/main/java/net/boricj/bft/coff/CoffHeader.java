@@ -98,4 +98,9 @@ public class CoffHeader implements Writable {
 		dataOutput.writeShort(0); // SizeOfOptionalHeader
 		dataOutput.writeShort(characteristics);
 	}
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName();
+	}
 }

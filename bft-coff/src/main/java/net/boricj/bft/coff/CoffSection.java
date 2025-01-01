@@ -92,4 +92,15 @@ public abstract class CoffSection implements Writable {
 	public CoffRelocationTable getRelocations() {
 		return relocationTable;
 	}
+
+	@Override
+	public String toString() {
+		String className = getClass().getSimpleName();
+
+		if (name != null && !name.isEmpty()) {
+			return String.format("%s [%s]", className, name);
+		}
+
+		return className;
+	}
 }

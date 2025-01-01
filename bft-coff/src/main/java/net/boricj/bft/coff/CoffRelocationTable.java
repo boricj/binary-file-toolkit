@@ -191,4 +191,16 @@ public class CoffRelocationTable implements IndirectList<CoffRel>, Writable {
 	public CoffSection getSection() {
 		return section;
 	}
+
+	@Override
+	public String toString() {
+		String className = getClass().getSimpleName();
+		String name = section.getName();
+
+		if (name != null && !name.isEmpty()) {
+			return String.format("%s [%s]", className, name);
+		}
+
+		return className;
+	}
 }
