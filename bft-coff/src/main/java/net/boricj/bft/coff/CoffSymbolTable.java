@@ -22,13 +22,15 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.NavigableMap;
-import java.util.TreeMap;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
 
 import net.boricj.bft.ByteOutputStream;
-import net.boricj.bft.IndirectNavigableMap;
+import net.boricj.bft.IndirectList;
 import net.boricj.bft.Writable;
 import net.boricj.bft.coff.CoffSymbolTable.CoffSymbol;
 import net.boricj.bft.coff.constants.CoffStorageClass;
@@ -36,7 +38,7 @@ import net.boricj.bft.coff.constants.CoffStorageClass;
 import static net.boricj.bft.Utils.decodeNullTerminatedString;
 import static net.boricj.bft.Utils.roundUp;
 
-public class CoffSymbolTable implements IndirectNavigableMap<Integer, CoffSymbol>, Writable {
+public class CoffSymbolTable implements IndirectList<CoffSymbol>, Writable {
 	public static final int RECORD_LENGTH = 18;
 
 	public class CoffSymbol {
@@ -236,7 +238,9 @@ public class CoffSymbolTable implements IndirectNavigableMap<Integer, CoffSymbol
 	}
 
 	private final CoffFile coff;
-	private final NavigableMap<Integer, CoffSymbol> symbols = new TreeMap<>();
+	private final List<CoffSymbol> symbols = new ArrayList<>();
+	private final List<CoffSymbol> lookup = new ArrayList<>();
+	private final Map<CoffSymbol, Integer> reverseLookup = new IdentityHashMap<>();
 	private int pointerToSymbolTable;
 
 	protected CoffSymbolTable(CoffFile coff, CoffFile.Builder builder) {
@@ -312,7 +316,7 @@ public class CoffSymbolTable implements IndirectNavigableMap<Integer, CoffSymbol
 				throw new RuntimeException(ex);
 			}
 
-			idx = add(symbol);
+			idx = add(symbol, this);
 			idx += symbol.getNumberOfAuxSymbols();
 		}
 	}
@@ -332,8 +336,9 @@ public class CoffSymbolTable implements IndirectNavigableMap<Integer, CoffSymbol
 			return 0;
 		}
 
-		Entry<Integer, CoffSymbol> entry = symbols.lastEntry();
-		return (entry.getKey() + entry.getValue().getNumberOfAuxSymbols() + 1) * RECORD_LENGTH;
+		CoffSymbol lastSymbol = symbols.get(symbols.size() - 1);
+		int lastIndex = reverseLookup.get(lastSymbol);
+		return (lastIndex + lastSymbol.getNumberOfAuxSymbols() + 1) * RECORD_LENGTH;
 	}
 
 	@Override
@@ -341,7 +346,7 @@ public class CoffSymbolTable implements IndirectNavigableMap<Integer, CoffSymbol
 		ByteOutputStream dataOutput = coff.wrap(outputStream);
 		CoffStringTable stringTable = coff.getStrings();
 
-		for (CoffSymbol symbol : symbols.values()) {
+		for (CoffSymbol symbol : symbols) {
 			dataOutput.write(stringTable.encodeSymName(symbol.getName()));
 			dataOutput.writeInt(symbol.getValue());
 			dataOutput.writeShort(symbol.getSectionNumber());
@@ -353,8 +358,8 @@ public class CoffSymbolTable implements IndirectNavigableMap<Integer, CoffSymbol
 	}
 
 	@Override
-	public NavigableMap<Integer, CoffSymbol> getElements() {
-		return Collections.unmodifiableNavigableMap(symbols);
+	public List<CoffSymbol> getElements() {
+		return Collections.unmodifiableList(symbols);
 	}
 
 	public CoffSymbol addSymbol(
@@ -362,55 +367,61 @@ public class CoffSymbolTable implements IndirectNavigableMap<Integer, CoffSymbol
 		CoffSectionTable sectionTable = coff.getSections();
 
 		CoffSymbol symbol = new CoffSymbol(name, offset, (short) sectionTable.indexOf(section), type, storageClass);
-		add(symbol);
+		add(symbol, this);
 		return symbol;
 	}
 
 	public CoffSymbol addUndefined(String name) {
 		CoffSymbol symbol = new CoffSymbol(
 				name, 0, CoffSymbol.IMAGE_SYM_UNDEFINED, (byte) 0x20, CoffStorageClass.IMAGE_SYM_CLASS_EXTERNAL);
-		add(symbol);
+		add(symbol, this);
 		return symbol;
 	}
 
 	public CoffSymbol addAbsolute(String name, int value) {
 		CoffSymbol symbol = new CoffSymbol(
 				name, value, CoffSymbol.IMAGE_SYM_ABSOLUTE, (byte) 0x00, CoffStorageClass.IMAGE_SYM_CLASS_STATIC);
-		add(symbol);
+		add(symbol, this);
 		return symbol;
 	}
 
 	public CoffSymbol addFile(String name, String fileName) {
 		CoffSymbol symbol = new CoffSymbolFile(name, fileName);
-		add(symbol);
+		add(symbol, this);
 		return symbol;
 	}
 
 	public CoffSymbol addSection(CoffSection section) {
 		CoffSymbol symbol = new CoffSymbolSection(section);
-		add(symbol);
+		add(symbol, this);
 		return symbol;
 	}
 
-	private int add(CoffSymbol symbol) {
-		int idx = 0;
+	private int add(CoffSymbol symbol, CoffSymbolTable dummy) {
+		int idx = lookup.size();
 
-		if (!symbols.isEmpty()) {
-			Entry<Integer, CoffSymbol> entry = symbols.lastEntry();
-			idx = entry.getKey() + entry.getValue().getNumberOfAuxSymbols() + 1;
+		reverseLookup.put(symbol, idx);
+		symbols.add(symbol);
+		lookup.add(symbol);
+		for (int i = 0; i < symbol.getNumberOfAuxSymbols(); i++) {
+			lookup.add(null);
 		}
 
-		symbols.put(idx, symbol);
 		return idx;
 	}
 
-	public int indexOf(CoffSymbol symbol) {
-		for (Entry<Integer, CoffSymbol> entry : symbols.entrySet()) {
-			if (entry.getValue() == symbol) {
-				return entry.getKey();
-			}
-		}
+	@Override
+	public boolean contains(Object object) {
+		return reverseLookup.containsKey(object);
+	}
 
-		return -1;
+	@Override
+	public CoffSymbol get(int index) {
+		return lookup.get(index);
+	}
+
+	@Override
+	public int indexOf(Object object) {
+		return reverseLookup.getOrDefault(object, -1);
 	}
 }
