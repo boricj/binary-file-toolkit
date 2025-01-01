@@ -20,13 +20,16 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.AbstractList;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+import net.boricj.bft.IndirectList;
 import net.boricj.bft.Writable;
 import net.boricj.bft.elf.constants.ElfClass;
 import net.boricj.bft.elf.constants.ElfMachine;
@@ -36,9 +39,10 @@ import net.boricj.bft.elf.sections.ElfStringTable;
 
 import static net.boricj.bft.elf.ElfSection.SHN_LORESERVE;
 
-public class ElfSectionTable extends AbstractList<ElfSection> implements Writable {
+public class ElfSectionTable implements IndirectList<ElfSection>, Writable {
 	private final ElfFile elf;
 	private final List<ElfSection> table = new ArrayList<>();
+	private final Map<ElfSection, Integer> reverseLookup = new IdentityHashMap<>();
 
 	protected ElfSectionTable(ElfFile elf) {
 		this.elf = elf;
@@ -53,48 +57,6 @@ public class ElfSectionTable extends AbstractList<ElfSection> implements Writabl
 		// Actual parsing of section table is done inside ElfFile because its sections
 		// member is null until this constructor returns and we need it to instanciate
 		// sections which references other sections.
-	}
-
-	@Override
-	public boolean add(ElfSection section) {
-		Objects.requireNonNull(section);
-
-		if (section.getElfFile() != elf) {
-			throw new NoSuchElementException("section doesn't belong to this ELF file");
-		}
-		if (table.isEmpty() && !(section instanceof ElfNullSection)) {
-			throw new IllegalArgumentException("first section must be null section");
-		}
-		if (table.contains(section)) {
-			throw new IllegalStateException("section is already present inside section table");
-		}
-		if (table.size() == SHN_LORESERVE - 1) {
-			throw new RuntimeException("too many sections (extended count not implemented)");
-		}
-
-		return table.add(section);
-	}
-
-	@Override
-	public ElfSection get(int index) {
-		return table.get(index);
-	}
-
-	@Override
-	public int indexOf(Object section) {
-		Objects.requireNonNull(section);
-
-		int index = super.indexOf(section);
-		if (index == -1) {
-			throw new IllegalArgumentException("section isn't part of the section table");
-		}
-
-		return index;
-	}
-
-	@Override
-	public int size() {
-		return table.size();
 	}
 
 	@Override
@@ -161,7 +123,7 @@ public class ElfSectionTable extends AbstractList<ElfSection> implements Writabl
 	}
 
 	public ElfSection get(int index, ElfFile.Parser parser) throws IOException {
-		ElfSection section = table.get(index);
+		ElfSection section = get(index);
 
 		if (section == null) {
 			FileInputStream fis = parser.getFileInputStream();
@@ -186,6 +148,7 @@ public class ElfSectionTable extends AbstractList<ElfSection> implements Writabl
 					throw new RuntimeException(ident_class.name());
 			}
 
+			reverseLookup.put(section, index);
 			table.set(index, section);
 		}
 
@@ -284,6 +247,42 @@ public class ElfSectionTable extends AbstractList<ElfSection> implements Writabl
 			}
 			throw new RuntimeException(cause);
 		}
+	}
+
+	@Override
+	public boolean add(ElfSection section) {
+		Objects.requireNonNull(section);
+
+		if (section.getElfFile() != elf) {
+			throw new NoSuchElementException("section doesn't belong to this ELF file");
+		}
+		if (isEmpty() && !(section instanceof ElfNullSection)) {
+			throw new IllegalArgumentException("first section must be null section");
+		}
+		if (contains(section)) {
+			throw new IllegalStateException("section is already present inside section table");
+		}
+		if (size() == SHN_LORESERVE - 1) {
+			throw new RuntimeException("too many sections (extended count not implemented)");
+		}
+
+		reverseLookup.put(section, size());
+		return table.add(section);
+	}
+
+	@Override
+	public boolean contains(Object object) {
+		return reverseLookup.containsKey(object);
+	}
+
+	@Override
+	public int indexOf(Object object) {
+		return reverseLookup.getOrDefault(object, -1);
+	}
+
+	@Override
+	public List<ElfSection> getElements() {
+		return Collections.unmodifiableList(table);
 	}
 
 	@Override
