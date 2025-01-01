@@ -20,7 +20,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import net.boricj.bft.IndirectList;
@@ -73,43 +75,6 @@ public class ElfSymbolTable extends ElfSection implements IndirectList<ElfSymbol
 			this.visibility = visibility;
 			this.binding = binding;
 			this.st_shndx = st_shndx;
-		}
-
-		protected ElfSymbol(DataInput dataInput, ElfClass ident_class) throws IOException {
-			int st_name;
-			byte st_info;
-			byte st_other;
-
-			switch (ident_class) {
-				case ELFCLASS32:
-					st_name = dataInput.readInt();
-					this.st_value = dataInput.readInt();
-					this.st_size = dataInput.readInt();
-					st_info = dataInput.readByte();
-					st_other = dataInput.readByte();
-					this.st_shndx = dataInput.readShort();
-					break;
-
-				case ELFCLASS64:
-					st_name = dataInput.readInt();
-					st_info = dataInput.readByte();
-					st_other = dataInput.readByte();
-					this.st_shndx = dataInput.readShort();
-					this.st_value = dataInput.readLong();
-					this.st_size = dataInput.readLong();
-					break;
-
-				default:
-					throw new RuntimeException(ident_class.name());
-			}
-
-			byte st_type = (byte) (st_info & 0x0F);
-			byte st_binding = (byte) (st_info >> 4);
-
-			this.name = stringTable.get(st_name);
-			this.type = ElfSymbolType.valueFrom(st_type);
-			this.binding = ElfSymbolBinding.valueFrom(st_binding);
-			this.visibility = ElfSymbolVisibility.valueFrom(st_other);
 		}
 
 		protected void write(DataOutput dataOutput, ElfClass ident_class) throws IOException {
@@ -171,6 +136,7 @@ public class ElfSymbolTable extends ElfSection implements IndirectList<ElfSymbol
 	}
 
 	private final List<ElfSymbol> symbols = new ArrayList<>();
+	private final Map<ElfSymbol, Integer> reverseLookup = new IdentityHashMap<>();
 	private final ElfStringTable stringTable;
 
 	public ElfSymbolTable(ElfFile elf, String name, ElfStringTable stringTable) {
@@ -222,64 +188,51 @@ public class ElfSymbolTable extends ElfSection implements IndirectList<ElfSymbol
 		DataInput dataInput = elf.wrap(fis);
 
 		for (int i = 0; i < size / entsize; i++) {
-			symbols.add(new ElfSymbol(dataInput, ident_class));
+			int st_name;
+			byte st_info;
+			byte st_other;
+			short st_shndx;
+			long st_value;
+			long st_size;
+
+			switch (ident_class) {
+				case ELFCLASS32:
+					st_name = dataInput.readInt();
+					st_value = dataInput.readInt();
+					st_size = dataInput.readInt();
+					st_info = dataInput.readByte();
+					st_other = dataInput.readByte();
+					st_shndx = dataInput.readShort();
+					break;
+
+				case ELFCLASS64:
+					st_name = dataInput.readInt();
+					st_info = dataInput.readByte();
+					st_other = dataInput.readByte();
+					st_shndx = dataInput.readShort();
+					st_value = dataInput.readLong();
+					st_size = dataInput.readLong();
+					break;
+
+				default:
+					throw new RuntimeException(ident_class.name());
+			}
+
+			byte st_type = (byte) (st_info & 0x0F);
+			byte st_binding = (byte) (st_info >> 4);
+
+			String name = stringTable.get(st_name);
+			ElfSymbolType type = ElfSymbolType.valueFrom(st_type);
+			ElfSymbolBinding binding = ElfSymbolBinding.valueFrom(st_binding);
+			ElfSymbolVisibility visibility = ElfSymbolVisibility.valueFrom(st_other);
+
+			add(name, st_value, st_size, type, visibility, binding, st_shndx);
 		}
 	}
 
 	@Override
 	public int getType() {
 		return ElfSectionType.SHT_SYMTAB.getValue();
-	}
-
-	public ElfSymbol add(
-			String st_name,
-			long st_value,
-			long st_size,
-			ElfSymbolType type,
-			ElfSymbolVisibility visibility,
-			ElfSymbolBinding binding,
-			ElfSection st_sh) {
-		short st_shndx = (short) getElfFile().getSections().indexOf(st_sh);
-		return add(st_name, st_value, st_size, type, visibility, binding, st_shndx);
-	}
-
-	public ElfSymbol add(
-			String st_name,
-			long st_value,
-			long st_size,
-			ElfSymbolType type,
-			ElfSymbolVisibility visibility,
-			ElfSymbolBinding binding,
-			short st_shndx) {
-		ElfSymbol symbol = new ElfSymbol(st_name, st_value, st_size, type, visibility, binding, st_shndx);
-		symbols.add(symbol);
-		return symbol;
-	}
-
-	public ElfSymbol addNull() {
-		return add("", 0, 0, STT_NOTYPE, STV_DEFAULT, STB_LOCAL, (short) SHN_UNDEF);
-	}
-
-	public ElfSymbol addFile(String value) {
-		return add(value, 0, 0, STT_FILE, STV_DEFAULT, STB_LOCAL, (short) SHN_ABS);
-	}
-
-	public ElfSymbol addSection(ElfSection section) {
-		return add("", 0, 0, STT_SECTION, STV_DEFAULT, STB_LOCAL, section);
-	}
-
-	public ElfSymbol addDefined(
-			String name, long offset, long size, ElfSymbolType type, ElfSymbolBinding binding, ElfSection section) {
-		return add(name, offset, size, type, STV_DEFAULT, binding, section);
-	}
-
-	public ElfSymbol addUndefined(String name) {
-		return add(name, 0, 0, STT_NOTYPE, STV_DEFAULT, STB_GLOBAL, (short) SHN_UNDEF);
-	}
-
-	@Override
-	public List<ElfSymbol> getElements() {
-		return Collections.unmodifiableList(symbols);
 	}
 
 	@Override
@@ -315,6 +268,73 @@ public class ElfSymbolTable extends ElfSection implements IndirectList<ElfSymbol
 		}
 
 		return info;
+	}
+
+	public ElfSymbol addNull() {
+		return add("", 0, 0, STT_NOTYPE, STV_DEFAULT, STB_LOCAL, (short) SHN_UNDEF);
+	}
+
+	public ElfSymbol addFile(String value) {
+		return add(value, 0, 0, STT_FILE, STV_DEFAULT, STB_LOCAL, (short) SHN_ABS);
+	}
+
+	public ElfSymbol addSection(ElfSection section) {
+		return add("", 0, 0, STT_SECTION, STV_DEFAULT, STB_LOCAL, section);
+	}
+
+	public ElfSymbol addDefined(
+			String name, long offset, long size, ElfSymbolType type, ElfSymbolBinding binding, ElfSection section) {
+		return add(name, offset, size, type, STV_DEFAULT, binding, section);
+	}
+
+	public ElfSymbol addUndefined(String name) {
+		return add(name, 0, 0, STT_NOTYPE, STV_DEFAULT, STB_GLOBAL, (short) SHN_UNDEF);
+	}
+
+	public ElfSymbol add(
+			String st_name,
+			long st_value,
+			long st_size,
+			ElfSymbolType type,
+			ElfSymbolVisibility visibility,
+			ElfSymbolBinding binding,
+			ElfSection st_sh) {
+		short st_shndx = (short) getElfFile().getSections().indexOf(st_sh);
+		return add(st_name, st_value, st_size, type, visibility, binding, st_shndx);
+	}
+
+	public ElfSymbol add(
+			String st_name,
+			long st_value,
+			long st_size,
+			ElfSymbolType type,
+			ElfSymbolVisibility visibility,
+			ElfSymbolBinding binding,
+			short st_shndx) {
+		ElfSymbol symbol = new ElfSymbol(st_name, st_value, st_size, type, visibility, binding, st_shndx);
+		reverseLookup.put(symbol, symbols.size());
+		symbols.add(symbol);
+		return symbol;
+	}
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName();
+	}
+
+	@Override
+	public boolean contains(Object object) {
+		return reverseLookup.containsKey(object);
+	}
+
+	@Override
+	public int indexOf(Object object) {
+		return reverseLookup.getOrDefault(object, -1);
+	}
+
+	@Override
+	public List<ElfSymbol> getElements() {
+		return Collections.unmodifiableList(symbols);
 	}
 
 	private static long computeAddrAlign(ElfFile file) {
