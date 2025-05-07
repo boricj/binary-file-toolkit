@@ -4,11 +4,11 @@
 	<parent>
 		<groupId>net.boricj</groupId>
 		<artifactId>bft</artifactId>
-		<version>0.4.0</version>
+		<version>0.5.0-SNAPSHOT</version>
 	</parent>
 	<groupId>net.boricj</groupId>
 	<artifactId>bft-coff</artifactId>
-	<version>0.4.0</version>
+	<version>0.5.0-SNAPSHOT</version>
 	<name>boricj's binary file toolkit - COFF</name>
 	<url>http://maven.apache.org</url>
 	<dependencies>
