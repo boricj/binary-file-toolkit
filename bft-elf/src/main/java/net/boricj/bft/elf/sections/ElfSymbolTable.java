@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +47,7 @@ import static net.boricj.bft.elf.constants.ElfSymbolType.STT_SECTION;
 import static net.boricj.bft.elf.constants.ElfSymbolVisibility.STV_DEFAULT;
 
 public class ElfSymbolTable extends ElfSection implements IndirectList<ElfSymbol> {
-	public class ElfSymbol {
+	public class ElfSymbol implements Comparable<ElfSymbol> {
 		private final String name;
 		private final long st_value;
 		private final long st_size;
@@ -132,6 +133,61 @@ public class ElfSymbolTable extends ElfSection implements IndirectList<ElfSymbol
 
 		public short getIndex() {
 			return st_shndx;
+		}
+
+		public boolean isNull() {
+			return name == "" && st_value == 0 && st_size == 0 && type == STT_NOTYPE && binding == STB_LOCAL;
+		}
+
+		@Override
+		public int compareTo(ElfSymbol o) {
+			// Null symbols first.
+			if (isNull() && !o.isNull()) {
+				return -1;
+			}
+			else if (!isNull() && o.isNull()) {
+				return 1;
+			}
+			// Local symbols first.
+			else if (binding == STB_LOCAL && o.binding != STB_LOCAL) {
+				return -1;
+			}
+			else if (binding != STB_LOCAL && o.binding == STB_LOCAL) {
+				return 1;
+			}
+			// File symbols next.
+			else if (type == STT_FILE && o.type != STT_FILE) {
+				return -1;
+			}
+			else if (type != STT_FILE && o.type == STT_FILE) {
+				return 1;
+			}
+			// Section symbols next.
+			else if (type == STT_SECTION && o.type != STT_SECTION) {
+				return -1;
+			}
+			else if (type != STT_SECTION && o.type == STT_SECTION) {
+				return 1;
+			}
+			// Put undefined sections last.
+			else if (st_shndx != SHN_UNDEF && o.st_shndx == SHN_UNDEF) {
+				return -1;
+			}
+			else if (st_shndx == SHN_UNDEF && o.st_shndx != SHN_UNDEF) {
+				return 1;
+			}
+			// Compare by section index.
+			else if (st_shndx != o.st_shndx) {
+				return Integer.compare(Short.toUnsignedInt(st_shndx), Short.toUnsignedInt(o.st_shndx));
+			}
+			// Compare by value.
+			else if (st_value != o.st_value) {
+				return Long.compare(st_value, o.st_value);
+			}
+			// Compare by name.
+			else {
+				return name.compareTo(o.name);
+			}
 		}
 	}
 
@@ -315,6 +371,15 @@ public class ElfSymbolTable extends ElfSection implements IndirectList<ElfSymbol
 		reverseLookup.put(symbol, symbols.size());
 		symbols.add(symbol);
 		return symbol;
+	}
+
+	@Override
+	public void sort(Comparator<? super ElfSymbol> comparator) {
+		symbols.sort(comparator);
+		reverseLookup.clear();
+		for (int i = 0; i < symbols.size(); i++) {
+			reverseLookup.put(symbols.get(i), i);
+		}
 	}
 
 	@Override
