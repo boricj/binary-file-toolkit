@@ -13,6 +13,9 @@
  */
 package net.boricj.bft.coff;
 
+import static net.boricj.bft.Utils.decodeNullTerminatedString;
+import static net.boricj.bft.Utils.roundUp;
+
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.FileInputStream;
@@ -25,6 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,13 +39,10 @@ import net.boricj.bft.Writable;
 import net.boricj.bft.coff.CoffSymbolTable.CoffSymbol;
 import net.boricj.bft.coff.constants.CoffStorageClass;
 
-import static net.boricj.bft.Utils.decodeNullTerminatedString;
-import static net.boricj.bft.Utils.roundUp;
-
 public class CoffSymbolTable implements IndirectList<CoffSymbol>, Writable {
 	public static final int RECORD_LENGTH = 18;
 
-	public class CoffSymbol {
+	public class CoffSymbol implements Comparable<CoffSymbol> {
 		public static final short IMAGE_SYM_UNDEFINED = 0;
 		public static final short IMAGE_SYM_ABSOLUTE = -1;
 		public static final short IMAGE_SYM_DEBUG = -2;
@@ -101,6 +102,37 @@ public class CoffSymbolTable implements IndirectList<CoffSymbol>, Writable {
 		}
 
 		protected void writeAuxiliarySymbolRecord(DataOutput dataOutput) throws IOException {}
+
+		@Override
+		public int compareTo(CoffSymbol o) {
+			// External symbols last
+			if (sectionNumber == IMAGE_SYM_UNDEFINED && o.sectionNumber != IMAGE_SYM_UNDEFINED) {
+				return 1;
+			}
+			else if (sectionNumber != IMAGE_SYM_UNDEFINED && o.sectionNumber == IMAGE_SYM_UNDEFINED) {
+				return -1;
+			}
+			// Compare section numbers
+			int result = Integer.compare(sectionNumber, o.sectionNumber);
+			if (result != 0) {
+				return result;
+			}
+			// Symbol sections first
+			else if (this instanceof CoffSymbolSection && !(o instanceof CoffSymbolSection)) {
+				return -1;
+			}
+			else if (!(this instanceof CoffSymbolSection) && o instanceof CoffSymbolSection) {
+				return 1;
+			}
+			// Compare values
+			else if (value != o.value) {
+				return Integer.compare(value, o.value);
+			}
+			// Compare names
+			else {
+				return name.compareTo(o.name);
+			}
+		}
 	}
 
 	public class CoffSymbolFile extends CoffSymbol {
@@ -408,6 +440,17 @@ public class CoffSymbolTable implements IndirectList<CoffSymbol>, Writable {
 		}
 
 		return idx;
+	}
+
+	@Override
+	public void sort(Comparator<? super CoffSymbol> comparator) {
+		symbols.sort(comparator);
+		reverseLookup.clear();
+		int idx = 0;
+		for (CoffSymbol symbol : symbols) {
+			reverseLookup.put(symbol, idx);
+			idx += symbol.getNumberOfAuxSymbols() + 1;
+		}
 	}
 
 	@Override
