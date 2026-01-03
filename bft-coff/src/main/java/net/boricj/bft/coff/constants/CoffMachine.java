@@ -13,11 +13,13 @@
  */
 package net.boricj.bft.coff.constants;
 
+import net.boricj.bft.coff.machines.amd64.CoffRelocationType_amd64;
 import net.boricj.bft.coff.machines.i386.CoffRelocationType_i386;
 
 public enum CoffMachine {
 	IMAGE_FILE_MACHINE_UNKNOWN((short) 0x0, null),
 	IMAGE_FILE_MACHINE_I386((short) 0x14c, CoffRelocationType_i386.class),
+	IMAGE_FILE_MACHINE_AMD64((short) 0x8664, CoffRelocationType_amd64.class),
 	;
 
 	private final short value;
