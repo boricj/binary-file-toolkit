@@ -144,36 +144,31 @@ public class ElfSymbolTable extends ElfSection implements IndirectList<ElfSymbol
 			// Null symbols first.
 			if (isNull() && !o.isNull()) {
 				return -1;
-			}
-			else if (!isNull() && o.isNull()) {
+			} else if (!isNull() && o.isNull()) {
 				return 1;
 			}
 			// Local symbols first.
 			else if (binding == STB_LOCAL && o.binding != STB_LOCAL) {
 				return -1;
-			}
-			else if (binding != STB_LOCAL && o.binding == STB_LOCAL) {
+			} else if (binding != STB_LOCAL && o.binding == STB_LOCAL) {
 				return 1;
 			}
 			// File symbols next.
 			else if (type == STT_FILE && o.type != STT_FILE) {
 				return -1;
-			}
-			else if (type != STT_FILE && o.type == STT_FILE) {
+			} else if (type != STT_FILE && o.type == STT_FILE) {
 				return 1;
 			}
 			// Section symbols next.
 			else if (type == STT_SECTION && o.type != STT_SECTION) {
 				return -1;
-			}
-			else if (type != STT_SECTION && o.type == STT_SECTION) {
+			} else if (type != STT_SECTION && o.type == STT_SECTION) {
 				return 1;
 			}
 			// Put undefined sections last.
 			else if (st_shndx != SHN_UNDEF && o.st_shndx == SHN_UNDEF) {
 				return -1;
-			}
-			else if (st_shndx == SHN_UNDEF && o.st_shndx != SHN_UNDEF) {
+			} else if (st_shndx == SHN_UNDEF && o.st_shndx != SHN_UNDEF) {
 				return 1;
 			}
 			// Compare by section index.

@@ -13,9 +13,6 @@
  */
 package net.boricj.bft.coff;
 
-import static net.boricj.bft.Utils.decodeNullTerminatedString;
-import static net.boricj.bft.Utils.roundUp;
-
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.FileInputStream;
@@ -38,6 +35,9 @@ import net.boricj.bft.IndirectList;
 import net.boricj.bft.Writable;
 import net.boricj.bft.coff.CoffSymbolTable.CoffSymbol;
 import net.boricj.bft.coff.constants.CoffStorageClass;
+
+import static net.boricj.bft.Utils.decodeNullTerminatedString;
+import static net.boricj.bft.Utils.roundUp;
 
 public class CoffSymbolTable implements IndirectList<CoffSymbol>, Writable {
 	public static final int RECORD_LENGTH = 18;
@@ -108,8 +108,7 @@ public class CoffSymbolTable implements IndirectList<CoffSymbol>, Writable {
 			// External symbols last
 			if (sectionNumber == IMAGE_SYM_UNDEFINED && o.sectionNumber != IMAGE_SYM_UNDEFINED) {
 				return 1;
-			}
-			else if (sectionNumber != IMAGE_SYM_UNDEFINED && o.sectionNumber == IMAGE_SYM_UNDEFINED) {
+			} else if (sectionNumber != IMAGE_SYM_UNDEFINED && o.sectionNumber == IMAGE_SYM_UNDEFINED) {
 				return -1;
 			}
 			// Compare section numbers
@@ -120,8 +119,7 @@ public class CoffSymbolTable implements IndirectList<CoffSymbol>, Writable {
 			// Symbol sections first
 			else if (this instanceof CoffSymbolSection && !(o instanceof CoffSymbolSection)) {
 				return -1;
-			}
-			else if (!(this instanceof CoffSymbolSection) && o instanceof CoffSymbolSection) {
+			} else if (!(this instanceof CoffSymbolSection) && o instanceof CoffSymbolSection) {
 				return 1;
 			}
 			// Compare values
