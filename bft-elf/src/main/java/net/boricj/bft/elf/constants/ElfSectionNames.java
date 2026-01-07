@@ -16,6 +16,7 @@ package net.boricj.bft.elf.constants;
 public class ElfSectionNames {
 	public static final String _BSS = ".bss";
 	public static final String _REL = ".rel";
+	public static final String _RELA = ".rela";
 	public static final String _COMMENT = ".comment";
 	public static final String _DATA = ".data";
 	public static final String _NOTE_GNU_STACK = ".note.GNU-stack";
