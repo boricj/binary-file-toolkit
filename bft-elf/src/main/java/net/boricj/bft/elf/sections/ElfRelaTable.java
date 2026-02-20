@@ -130,6 +130,10 @@ public class ElfRelaTable extends ElfSection implements IndirectList<ElfRela> {
 		public ElfRelocationType getType() {
 			return type;
 		}
+
+		public long getAddend() {
+			return r_addend;
+		}
 	}
 
 	private final List<ElfRela> relocations = new ArrayList<>();
