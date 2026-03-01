@@ -1,21 +1,20 @@
 # Binary file toolkit
 
-This is a set of Java libraries for manipulating file formats used by toolchains.
+This is a set of Java libraries for reading and writing file formats used by toolchains.
 
 ## Modules
 
-* `bft-base`: library containing common base classes
-* `bft-base-tests`: library containing common base test classes
-* `bft-elf`: library for the _Executable and Linkable File_ specification
+* `bft-base`: library containing common base classes.
+* `bft-coff`: library for the _Common Object File Format_ specification.
+* `bft-elf`: library for the _Executable and Linkable File_ specification.
 
 ## Ethos
 
-This project focuses on the following points:
-* Correctness, using strong typing and pervasive checks to reduce the opportunities for misuse ;
-* Reproducibility, parsing and writing out a file should yield a byte-for-byte identical copy if practical ;
-* Unopiniated, allowing any valid layout for generated files without restriction.
+* **Correctness**: strong typing and exhaustive checks to reduce the opportunities for misuse.
+* **Reproducibility**: whenever possible, parsing and serializing results in a byte-identical output.
+* **Unopinionated**: no canonical layout is imposed.
 
-The following use-cases are outside the scope of this project:
-* Tolerating malformed or corrupted files ;
-* Graceful handling of valid but unsupported features ;
-* Directly modifying existing files.
+The following use-cases are out of scope:
+* Tolerating malformed/corrupted files.
+* Graceful handling of unsupported features.
+* Editing existing files.
