@@ -13,23 +13,8 @@
  */
 package net.boricj.bft;
 
-import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
-
 public class Utils {
 	private Utils() {}
-
-	public static String decodeNullTerminatedString(byte[] bytes, Charset charset) {
-		int idx;
-		for (idx = 0; idx < bytes.length; idx++) {
-			if (bytes[idx] == 0x00) {
-				break;
-			}
-		}
-
-		ByteBuffer byteBuffer = ByteBuffer.wrap(bytes, 0, idx);
-		return charset.decode(byteBuffer).toString();
-	}
 
 	public static int roundUp(int value, int alignment) {
 		if (alignment > 0) {

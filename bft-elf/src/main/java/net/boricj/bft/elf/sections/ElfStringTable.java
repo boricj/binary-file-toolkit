@@ -27,6 +27,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.TreeMap;
 
+import net.boricj.bft.ByteInputStream;
 import net.boricj.bft.elf.ElfFile;
 import net.boricj.bft.elf.ElfSection;
 import net.boricj.bft.elf.ElfSectionFlags;
@@ -83,15 +84,9 @@ public class ElfStringTable extends ElfSection implements Iterable<Integer> {
 		byte[] bytes = new byte[(int) size];
 		fis.readNBytes(bytes, 0, bytes.length);
 
-		int lastIndex = 0;
-		for (int index = 0; index < bytes.length; index++) {
-			if (bytes[index] == 0) {
-				ByteBuffer buffer = ByteBuffer.wrap(bytes, lastIndex, index - lastIndex);
-				String string = charset.decode(buffer).toString();
-
-				add(string);
-				lastIndex = index + 1;
-			}
+		ByteInputStream bis = ByteInputStream.asLittleEndian(bytes);
+		while (bis.available() > 0) {
+			add(bis.readNullTerminatedString(charset));
 		}
 	}
 
@@ -110,6 +105,7 @@ public class ElfStringTable extends ElfSection implements Iterable<Integer> {
 			throw new IllegalStateException("string table must start with an empty string");
 		}
 
+		// Check that the string doesn't contain a null byte, since that would break the string table format.
 		byte[] bytes = string.getBytes(charset);
 		for (byte b : bytes) {
 			if (b == 0x00) {

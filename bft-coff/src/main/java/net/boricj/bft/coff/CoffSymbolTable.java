@@ -30,13 +30,13 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.boricj.bft.ByteInputStream;
 import net.boricj.bft.ByteOutputStream;
 import net.boricj.bft.IndirectList;
 import net.boricj.bft.Writable;
 import net.boricj.bft.coff.CoffSymbolTable.CoffSymbol;
 import net.boricj.bft.coff.constants.CoffStorageClass;
 
-import static net.boricj.bft.Utils.decodeNullTerminatedString;
 import static net.boricj.bft.Utils.roundUp;
 
 public class CoffSymbolTable implements IndirectList<CoffSymbol>, Writable {
@@ -157,8 +157,9 @@ public class CoffSymbolTable implements IndirectList<CoffSymbol>, Writable {
 
 			byte[] aux = new byte[numberOfAuxSymbols * RECORD_LENGTH];
 			dataInput.readFully(aux);
+			ByteInputStream bis = ByteInputStream.asLittleEndian(aux);
 
-			this.fileName = decodeNullTerminatedString(aux, CHARSET);
+			this.fileName = bis.readNullTerminatedString(CHARSET);
 		}
 
 		@Override

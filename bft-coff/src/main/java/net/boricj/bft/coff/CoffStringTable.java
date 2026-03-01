@@ -33,9 +33,8 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.TreeMap;
 
+import net.boricj.bft.ByteInputStream;
 import net.boricj.bft.Writable;
-
-import static net.boricj.bft.Utils.decodeNullTerminatedString;
 
 public class CoffStringTable implements Iterable<Integer>, Writable {
 	public static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
@@ -167,10 +166,14 @@ public class CoffStringTable implements Iterable<Integer>, Writable {
 
 	public String decodeSecName(byte[] bytes) throws IOException {
 		if (bytes[0] == '/') {
-			String number = decodeNullTerminatedString(Arrays.copyOfRange(bytes, 1, bytes.length), charset);
+			ByteInputStream bis = ByteInputStream.asLittleEndian(bytes);
+			bis.skip(1);
+
+			String number = bis.readNullTerminatedString(charset);
 			return get(Integer.parseInt(number, 10));
 		} else {
-			return decodeNullTerminatedString(bytes, charset);
+			ByteInputStream bis = ByteInputStream.asLittleEndian(bytes);
+			return bis.readNullTerminatedString(charset);
 		}
 	}
 
@@ -197,7 +200,8 @@ public class CoffStringTable implements Iterable<Integer>, Writable {
 			DataInput dataInput = coff.wrap(inputStream);
 			return get(dataInput.readInt());
 		} else {
-			return decodeNullTerminatedString(bytes, charset);
+			ByteInputStream bis = ByteInputStream.asLittleEndian(bytes);
+			return bis.readNullTerminatedString(charset);
 		}
 	}
 
