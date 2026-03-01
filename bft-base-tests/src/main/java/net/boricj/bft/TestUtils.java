@@ -22,6 +22,7 @@ import java.nio.file.Files;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.function.Function;
 
 import org.junit.jupiter.api.AssertionFailureBuilder;
 
@@ -108,5 +109,16 @@ public class TestUtils {
 
 			AssertionFailureBuilder.assertionFailure().message(sb.toString()).buildAndThrow();
 		}
+	}
+
+	public static <Col extends IndirectList<Item>, Value, Item> Item findBy(
+			Col collection, Function<? super Item, String> nameGetter, Value value) {
+		for (Item item : collection.getElements()) {
+			if (value.equals(nameGetter.apply(item))) {
+				return item;
+			}
+		}
+
+		return null;
 	}
 }
