@@ -19,10 +19,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.Charset;
 
 public class ByteOutputStream extends FilterOutputStream implements DataOutput {
 	private final byte[] bytes = new byte[8];
 	private final ByteBuffer byteBuffer;
+	private int count = 0;
 
 	public ByteOutputStream(OutputStream outputStream, ByteOrder byteOrder) {
 		super(outputStream);
@@ -36,6 +38,12 @@ public class ByteOutputStream extends FilterOutputStream implements DataOutput {
 
 	public static ByteOutputStream asBigEndian(OutputStream outputStream) {
 		return new ByteOutputStream(outputStream, ByteOrder.BIG_ENDIAN);
+	}
+
+	@Override
+	public void write(int b) throws IOException {
+		super.write(b);
+		count++;
 	}
 
 	@Override
@@ -97,5 +105,21 @@ public class ByteOutputStream extends FilterOutputStream implements DataOutput {
 	@Override
 	public void writeUTF(String s) throws IOException {
 		throw new UnsupportedOperationException("Unimplemented method 'writeUTF'");
+	}
+
+	public void writeNullTerminatedString(String name, Charset charset) throws IOException {
+		write(name.getBytes(charset));
+		writeByte(0);
+	}
+
+	public void alignTo(int i) throws IOException {
+		if (count % i != 0) {
+			int padding = i - (count % i);
+			write(new byte[padding], 0, padding);
+		}
+	}
+
+	public int getCount() {
+		return count;
 	}
 }
