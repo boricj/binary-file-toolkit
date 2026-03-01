@@ -13,6 +13,8 @@
  */
 package net.boricj.bft;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInput;
 import java.io.EOFException;
 import java.io.FilterInputStream;
@@ -20,10 +22,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.Charset;
 
 public class ByteInputStream extends FilterInputStream implements DataInput {
 	private final byte[] bytes = new byte[8];
 	private final ByteBuffer byteBuffer;
+	private int count = 0;
 
 	public ByteInputStream(InputStream inputStream, ByteOrder byteOrder) {
 		super(inputStream);
@@ -35,31 +39,73 @@ public class ByteInputStream extends FilterInputStream implements DataInput {
 		return new ByteInputStream(inputStream, ByteOrder.LITTLE_ENDIAN);
 	}
 
+	public static ByteInputStream asLittleEndian(byte[] bytes) {
+		return new ByteInputStream(new ByteArrayInputStream(bytes), ByteOrder.LITTLE_ENDIAN);
+	}
+
 	public static ByteInputStream asBigEndian(InputStream inputStream) {
 		return new ByteInputStream(inputStream, ByteOrder.BIG_ENDIAN);
 	}
 
+	public static ByteInputStream asBigEndian(byte[] bytes) {
+		return new ByteInputStream(new ByteArrayInputStream(bytes), ByteOrder.BIG_ENDIAN);
+	}
+
+	@Override
+	public int read() throws IOException {
+		int ret = super.read();
+
+		if (ret >= 0) {
+			count++;
+		}
+
+		return ret;
+	}
+
+	@Override
+	public int read(byte[] b) throws IOException {
+		return read(b, 0, b.length);
+	}
+
+	@Override
+	public int read(byte[] b, int off, int len) throws IOException {
+		int ret = super.read(b, off, len);
+
+		if (ret >= 0) {
+			count += ret;
+		}
+
+		return ret;
+	}
+
 	@Override
 	public void readFully(byte[] b) throws IOException {
-		read(b, 0, b.length);
+		readFully(b, 0, b.length);
 	}
 
 	@Override
 	public void readFully(byte[] b, int off, int len) throws IOException {
-		if (in.read(b, off, len) != len) {
+		int ret = read(b, off, len);
+
+		if (ret != len && len > 0) {
 			throw new EOFException();
 		}
 	}
 
 	@Override
 	public int skipBytes(int n) throws IOException {
-		return (int) in.skip(n);
+		int ret = (int) super.skip(n);
+
+		if (ret >= 0) {
+			count += ret;
+		}
+
+		return ret;
 	}
 
 	@Override
 	public boolean readBoolean() throws IOException {
 		readFully(bytes, 0, 1);
-
 		return byteBuffer.get(0) != 0 ? true : false;
 	}
 
@@ -122,5 +168,42 @@ public class ByteInputStream extends FilterInputStream implements DataInput {
 	@Override
 	public String readUTF() throws IOException {
 		throw new UnsupportedOperationException("Unimplemented method 'readUTF'");
+	}
+
+	@Override
+	public long skip(long n) throws IOException {
+		return skipBytes((int) n);
+	}
+
+	public int alignTo(int alignment) throws IOException {
+		int target = count % alignment;
+		if (target != 0) {
+			skipBytes(alignment - target);
+		}
+		return count;
+	}
+
+	public String readNullTerminatedString(Charset utf8) throws IOException {
+		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
+		int b;
+		while ((b = read()) != -1) {
+			if (b == 0) {
+				break;
+			}
+			buffer.write(b);
+		}
+
+		return buffer.toString(utf8.name());
+	}
+
+	public ByteInputStream slice(int length) throws IOException {
+		byte[] data = new byte[length];
+		readFully(data);
+		return new ByteInputStream(new ByteArrayInputStream(data), byteBuffer.order());
+	}
+
+	public int getCount() {
+		return count;
 	}
 }
