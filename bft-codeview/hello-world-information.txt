@@ -1,0 +1,329 @@
+PS C:\Users\jblbe\Documents\Workspace\binary-file-toolkit\bft-coff\src\test\resources\net\boricj\bft\coff> dumpbin /RAWDATA '/SECTION:.debug$S' .\i386\hello-world_i686-pc-windows-msvc.z7.obj
+Microsoft (R) COFF/PE Dumper Version 14.43.34808.0
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+
+Dump of file .\i386\hello-world_i686-pc-windows-msvc.z7.obj
+
+File Type: COFF OBJECT
+
+SECTION HEADER #2
+.debug$S name
+       0 physical address
+       0 virtual address
+     2BC size of raw data
+     133 file pointer to raw data (00000133 to 000003EE)
+     3EF file pointer to relocation table
+       0 file pointer to line numbers
+       5 number of relocations
+       0 number of line numbers
+42100040 flags
+         Initialized Data
+         Discardable
+         1 byte align
+         Read Only
+
+RAW DATA #2
+  00000000: 04 00 00 00 F1 00 00 00 D3 00 00 00 95 00 01 11  ....ñ...Ó.......
+  00000010: 00 00 00 00 43 3A 5C 55 73 65 72 73 5C 6A 62 6C  ....C:\Users\jbl
+  00000020: 62 65 5C 44 6F 63 75 6D 65 6E 74 73 5C 57 6F 72  be\Documents\Wor
+  00000030: 6B 73 70 61 63 65 5C 62 69 6E 61 72 79 2D 66 69  kspace\binary-fi
+  00000040: 6C 65 2D 74 6F 6F 6C 6B 69 74 5C 62 66 74 2D 63  le-toolkit\bft-c
+  00000050: 6F 66 66 5C 73 72 63 5C 74 65 73 74 5C 72 65 73  off\src\test\res
+  00000060: 6F 75 72 63 65 73 5C 6E 65 74 5C 62 6F 72 69 63  ources\net\boric
+  00000070: 6A 5C 62 66 74 5C 63 6F 66 66 5C 68 65 6C 6C 6F  j\bft\coff\hello
+  00000080: 2D 77 6F 72 6C 64 5F 69 36 38 36 2D 70 63 2D 77  -world_i686-pc-w
+  00000090: 69 6E 64 6F 77 73 2D 6D 73 76 63 2E 7A 37 2E 6F  indows-msvc.z7.o
+  000000A0: 62 6A 00 3A 00 3C 11 00 20 00 00 07 00 13 00 2B  bj.:.<.. ......+
+  000000B0: 00 F8 87 00 00 13 00 2B 00 F8 87 00 00 4D 69 63  .ø.....+.ø...Mic
+  000000C0: 72 6F 73 6F 66 74 20 28 52 29 20 4F 70 74 69 6D  rosoft (R) Optim
+  000000D0: 69 7A 69 6E 67 20 43 6F 6D 70 69 6C 65 72 00 00  izing Compiler..
+  000000E0: F5 00 00 00 24 00 00 00 00 00 00 00 00 00 00 00  õ...$...........
+  000000F0: 14 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00  ................
+  00000100: 76 00 00 00 03 00 00 00 04 00 00 00 F1 00 00 00  v...........ñ...
+  00000110: 70 00 00 00 2A 00 47 11 00 00 00 00 00 00 00 00  p...*.G.........
+  00000120: 00 00 00 00 14 00 00 00 03 00 00 00 12 00 00 00  ................
+  00000130: 03 10 00 00 00 00 00 00 00 00 01 6D 61 69 6E 00  ...........main.
+  00000140: 1C 00 12 10 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  00000150: 00 00 00 00 00 00 00 00 00 00 00 82 12 00 0F 00  ................
+  00000160: 0B 11 08 00 00 00 74 00 00 00 61 72 67 63 00 0F  ......t...argc..
+  00000170: 00 0B 11 0C 00 00 00 00 10 00 00 61 72 67 76 00  ...........argv.
+  00000180: 02 00 4F 11 F2 00 00 00 38 00 00 00 00 00 00 00  ..O.ò...8.......
+  00000190: 00 00 00 00 14 00 00 00 00 00 00 00 04 00 00 00  ................
+  000001A0: 2C 00 00 00 00 00 00 00 03 00 00 80 03 00 00 00  ,...............
+  000001B0: 04 00 00 80 10 00 00 00 05 00 00 80 12 00 00 00  ................
+  000001C0: 06 00 00 80 F4 00 00 00 28 00 00 00 01 00 00 00  ....ô...(.......
+  000001D0: 20 03 45 52 D9 D9 FF F4 6F 38 48 02 40 6D AA 0D   .ERÙÙÿôo8H.@mª.
+  000001E0: 24 C9 2B 0F 89 70 63 9A 56 92 4F FA A2 CB 3F 19  $É+..pc.V.Oú¢Ë?.
+  000001F0: 56 4C 00 00 F3 00 00 00 AF 00 00 00 00 43 3A 5C  VL..ó...¯....C:\
+  00000200: 55 73 65 72 73 5C 6A 62 6C 62 65 5C 44 6F 63 75  Users\jblbe\Docu
+  00000210: 6D 65 6E 74 73 5C 57 6F 72 6B 73 70 61 63 65 5C  ments\Workspace\
+  00000220: 62 69 6E 61 72 79 2D 66 69 6C 65 2D 74 6F 6F 6C  binary-file-tool
+  00000230: 6B 69 74 5C 62 66 74 2D 63 6F 66 66 5C 73 72 63  kit\bft-coff\src
+  00000240: 5C 74 65 73 74 5C 72 65 73 6F 75 72 63 65 73 5C  \test\resources\
+  00000250: 6E 65 74 5C 62 6F 72 69 63 6A 5C 62 66 74 5C 63  net\boricj\bft\c
+  00000260: 6F 66 66 5C 68 65 6C 6C 6F 2D 77 6F 72 6C 64 2E  off\hello-world.
+  00000270: 63 00 24 54 30 20 24 65 62 70 20 3D 20 24 65 69  c.$T0 $ebp = $ei
+  00000280: 70 20 24 54 30 20 34 20 2B 20 5E 20 3D 20 24 65  p $T0 4 + ^ = $e
+  00000290: 62 70 20 24 54 30 20 5E 20 3D 20 24 65 73 70 20  bp $T0 ^ = $esp
+  000002A0: 24 54 30 20 38 20 2B 20 3D 20 00 00 F1 00 00 00  $T0 8 + = ..ñ...
+  000002B0: 08 00 00 00 06 00 4C 11 0D 10 00 00              ......L.....
+
+  Summary
+
+         2BC .debug$S
+PS C:\Users\jblbe\Documents\Workspace\binary-file-toolkit\bft-coff\src\test\resources\net\boricj\bft\coff> dumpbin /RAWDATA '/SECTION:.debug$T' .\i386\hello-world_i686-pc-windows-msvc.z7.obj
+Microsoft (R) COFF/PE Dumper Version 14.43.34808.0
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+
+Dump of file .\i386\hello-world_i686-pc-windows-msvc.z7.obj
+
+File Type: COFF OBJECT
+
+SECTION HEADER #5
+.debug$T name
+       0 physical address
+       0 virtual address
+     544 size of raw data
+     457 file pointer to raw data (00000457 to 0000099A)
+       0 file pointer to relocation table
+       0 file pointer to line numbers
+       0 number of relocations
+       0 number of line numbers
+42100040 flags
+         Initialized Data
+         Discardable
+         1 byte align
+         Read Only
+
+RAW DATA #5
+  00000000: 04 00 00 00 0A 00 02 10 70 04 00 00 0A 80 00 00  ........p.......
+  00000010: 0E 00 01 12 02 00 00 00 74 00 00 00 00 10 00 00  ........t.......
+  00000020: 0E 00 08 10 74 00 00 00 00 00 02 00 01 10 00 00  ....t...........
+  00000030: 12 00 01 16 00 00 00 00 02 10 00 00 6D 61 69 6E  ............main
+  00000040: 00 F3 F2 F1 6E 00 05 16 00 00 00 00 43 3A 5C 55  .óòñn.......C:\U
+  00000050: 73 65 72 73 5C 6A 62 6C 62 65 5C 44 6F 63 75 6D  sers\jblbe\Docum
+  00000060: 65 6E 74 73 5C 57 6F 72 6B 73 70 61 63 65 5C 62  ents\Workspace\b
+  00000070: 69 6E 61 72 79 2D 66 69 6C 65 2D 74 6F 6F 6C 6B  inary-file-toolk
+  00000080: 69 74 5C 62 66 74 2D 63 6F 66 66 5C 73 72 63 5C  it\bft-coff\src\
+  00000090: 74 65 73 74 5C 72 65 73 6F 75 72 63 65 73 5C 6E  test\resources\n
+  000000A0: 65 74 5C 62 6F 72 69 63 6A 5C 62 66 74 5C 63 6F  et\boricj\bft\co
+  000000B0: 66 66 00 F1 76 00 05 16 00 00 00 00 43 3A 5C 50  ff.ñv.......C:\P
+  000000C0: 72 6F 67 72 61 6D 20 46 69 6C 65 73 20 28 78 38  rogram Files (x8
+  000000D0: 36 29 5C 4D 69 63 72 6F 73 6F 66 74 20 56 69 73  6)\Microsoft Vis
+  000000E0: 75 61 6C 20 53 74 75 64 69 6F 5C 32 30 32 32 5C  ual Studio\2022\
+  000000F0: 42 75 69 6C 64 54 6F 6F 6C 73 5C 56 43 5C 54 6F  BuildTools\VC\To
+  00000100: 6F 6C 73 5C 4D 53 56 43 5C 31 34 2E 34 33 2E 33  ols\MSVC\14.43.3
+  00000110: 34 38 30 38 5C 62 69 6E 5C 48 6F 73 74 58 36 34  4808\bin\HostX64
+  00000120: 5C 78 38 36 5C 63 6C 2E 65 78 65 00 16 00 05 16  \x86\cl.exe.....
+  00000130: 00 00 00 00 2E 5C 68 65 6C 6C 6F 2D 77 6F 72 6C  .....\hello-worl
+  00000140: 64 2E 63 00 7A 00 05 16 00 00 00 00 43 3A 5C 55  d.c.z.......C:\U
+  00000150: 73 65 72 73 5C 6A 62 6C 62 65 5C 44 6F 63 75 6D  sers\jblbe\Docum
+  00000160: 65 6E 74 73 5C 57 6F 72 6B 73 70 61 63 65 5C 62  ents\Workspace\b
+  00000170: 69 6E 61 72 79 2D 66 69 6C 65 2D 74 6F 6F 6C 6B  inary-file-toolk
+  00000180: 69 74 5C 62 66 74 2D 63 6F 66 66 5C 73 72 63 5C  it\bft-coff\src\
+  00000190: 74 65 73 74 5C 72 65 73 6F 75 72 63 65 73 5C 6E  test\resources\n
+  000001A0: 65 74 5C 62 6F 72 69 63 6A 5C 62 66 74 5C 63 6F  et\boricj\bft\co
+  000001B0: 66 66 5C 76 63 31 34 30 2E 70 64 62 00 F3 F2 F1  ff\vc140.pdb.óòñ
+  000001C0: 06 01 05 16 00 00 00 00 2D 5A 37 20 2D 46 6F 3A  ........-Z7 -Fo:
+  000001D0: 43 3A 5C 55 73 65 72 73 5C 6A 62 6C 62 65 5C 44  C:\Users\jblbe\D
+  000001E0: 6F 63 75 6D 65 6E 74 73 5C 57 6F 72 6B 73 70 61  ocuments\Workspa
+  000001F0: 63 65 5C 62 69 6E 61 72 79 2D 66 69 6C 65 2D 74  ce\binary-file-t
+  00000200: 6F 6F 6C 6B 69 74 5C 62 66 74 2D 63 6F 66 66 5C  oolkit\bft-coff\
+  00000210: 73 72 63 5C 74 65 73 74 5C 72 65 73 6F 75 72 63  src\test\resourc
+  00000220: 65 73 5C 6E 65 74 5C 62 6F 72 69 63 6A 5C 62 66  es\net\boricj\bf
+  00000230: 74 5C 63 6F 66 66 5C 68 65 6C 6C 6F 2D 77 6F 72  t\coff\hello-wor
+  00000240: 6C 64 5F 69 36 38 36 2D 70 63 2D 77 69 6E 64 6F  ld_i686-pc-windo
+  00000250: 77 73 2D 6D 73 76 63 2E 7A 37 2E 6F 62 6A 20 2D  ws-msvc.z7.obj -
+  00000260: 4D 54 20 2D 49 22 43 3A 5C 50 72 6F 67 72 61 6D  MT -I"C:\Program
+  00000270: 20 46 69 6C 65 73 20 28 78 38 36 29 5C 4D 69 63   Files (x86)\Mic
+  00000280: 72 6F 73 6F 66 74 20 56 69 73 75 61 6C 20 53 74  rosoft Visual St
+  00000290: 75 64 69 6F 5C 32 30 32 32 5C 42 75 69 6C 64 54  udio\2022\BuildT
+  000002A0: 6F 6F 6C 73 5C 56 43 5C 54 6F 6F 6C 73 5C 4D 53  ools\VC\Tools\MS
+  000002B0: 56 43 5C 31 34 2E 34 33 2E 33 34 38 30 38 5C 69  VC\14.43.34808\i
+  000002C0: 6E 63 6C 75 64 65 22 00 F2 00 05 16 00 00 00 00  nclude".ò.......
+  000002D0: 20 2D 49 22 43 3A 5C 50 72 6F 67 72 61 6D 20 46   -I"C:\Program F
+  000002E0: 69 6C 65 73 20 28 78 38 36 29 5C 4D 69 63 72 6F  iles (x86)\Micro
+  000002F0: 73 6F 66 74 20 56 69 73 75 61 6C 20 53 74 75 64  soft Visual Stud
+  00000300: 69 6F 5C 32 30 32 32 5C 42 75 69 6C 64 54 6F 6F  io\2022\BuildToo
+  00000310: 6C 73 5C 56 43 5C 54 6F 6F 6C 73 5C 4D 53 56 43  ls\VC\Tools\MSVC
+  00000320: 5C 31 34 2E 34 33 2E 33 34 38 30 38 5C 41 54 4C  \14.43.34808\ATL
+  00000330: 4D 46 43 5C 69 6E 63 6C 75 64 65 22 20 2D 49 22  MFC\include" -I"
+  00000340: 43 3A 5C 50 72 6F 67 72 61 6D 20 46 69 6C 65 73  C:\Program Files
+  00000350: 20 28 78 38 36 29 5C 4D 69 63 72 6F 73 6F 66 74   (x86)\Microsoft
+  00000360: 20 56 69 73 75 61 6C 20 53 74 75 64 69 6F 5C 32   Visual Studio\2
+  00000370: 30 32 32 5C 42 75 69 6C 64 54 6F 6F 6C 73 5C 56  022\BuildTools\V
+  00000380: 43 5C 41 75 78 69 6C 69 61 72 79 5C 56 53 5C 69  C\Auxiliary\VS\i
+  00000390: 6E 63 6C 75 64 65 22 20 2D 49 22 43 3A 5C 50 72  nclude" -I"C:\Pr
+  000003A0: 6F 67 72 61 6D 20 46 69 6C 65 73 20 28 78 38 36  ogram Files (x86
+  000003B0: 29 5C 57 69 6E 64 6F 77 73 00 F2 F1 FA 00 05 16  )\Windows.òñú...
+  000003C0: 00 00 00 00 20 4B 69 74 73 5C 31 30 5C 69 6E 63  .... Kits\10\inc
+  000003D0: 6C 75 64 65 5C 31 30 2E 30 2E 32 32 36 32 31 2E  lude\10.0.22621.
+  000003E0: 30 5C 75 63 72 74 22 20 2D 49 22 43 3A 5C 50 72  0\ucrt" -I"C:\Pr
+  000003F0: 6F 67 72 61 6D 20 46 69 6C 65 73 20 28 78 38 36  ogram Files (x86
+  00000400: 29 5C 57 69 6E 64 6F 77 73 20 4B 69 74 73 5C 31  )\Windows Kits\1
+  00000410: 30 5C 69 6E 63 6C 75 64 65 5C 31 30 2E 30 2E 32  0\include\10.0.2
+  00000420: 32 36 32 31 2E 30 5C 75 6D 22 20 2D 49 22 43 3A  2621.0\um" -I"C:
+  00000430: 5C 50 72 6F 67 72 61 6D 20 46 69 6C 65 73 20 28  \Program Files (
+  00000440: 78 38 36 29 5C 57 69 6E 64 6F 77 73 20 4B 69 74  x86)\Windows Kit
+  00000450: 73 5C 31 30 5C 69 6E 63 6C 75 64 65 5C 31 30 2E  s\10\include\10.
+  00000460: 30 2E 32 32 36 32 31 2E 30 5C 73 68 61 72 65 64  0.22621.0\shared
+  00000470: 22 20 2D 49 22 43 3A 5C 50 72 6F 67 72 61 6D 20  " -I"C:\Program
+  00000480: 46 69 6C 65 73 20 28 78 38 36 29 5C 57 69 6E 64  Files (x86)\Wind
+  00000490: 6F 77 73 20 4B 69 74 73 5C 31 30 5C 69 6E 63 6C  ows Kits\10\incl
+  000004A0: 75 64 65 5C 31 30 2E 30 2E 32 32 36 32 31 2E 30  ude\10.0.22621.0
+  000004B0: 5C 77 69 6E 72 74 22 00 12 00 04 16 03 00 00 00  \winrt".........
+  000004C0: 08 10 00 00 09 10 00 00 0A 10 00 00 5A 00 05 16  ............Z...
+  000004D0: 0B 10 00 00 20 2D 49 22 43 3A 5C 50 72 6F 67 72  .... -I"C:\Progr
+  000004E0: 61 6D 20 46 69 6C 65 73 20 28 78 38 36 29 5C 57  am Files (x86)\W
+  000004F0: 69 6E 64 6F 77 73 20 4B 69 74 73 5C 31 30 5C 69  indows Kits\10\i
+  00000500: 6E 63 6C 75 64 65 5C 31 30 2E 30 2E 32 32 36 32  nclude\10.0.2262
+  00000510: 31 2E 30 5C 63 70 70 77 69 6E 72 74 22 20 2D 54  1.0\cppwinrt" -T
+  00000520: 43 20 2D 58 00 F3 F2 F1 1A 00 03 16 05 00 04 10  C -X.óòñ........
+  00000530: 00 00 05 10 00 00 06 10 00 00 07 10 00 00 0C 10  ................
+  00000540: 00 00 F2 F1                                      ..òñ
+
+  Summary
+
+         544 .debug$T
+
+PS C:\Users\jblbe\Documents\Workspace\binary-file-toolkit\bft-coff\src\test\resources\net\boricj\bft\coff> .\cvdump.exe .\i386\hello-world_i686-pc-windows-msvc.z7.obj
+Microsoft (R) Debugging Information Dumper  Version 14.00.23611
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+
+***** SECTION #2
+
+*** SYMBOLS
+
+(00000C) S_OBJNAME: Signature: 00000000, C:\Users\jblbe\Documents\Workspace\binary-file-toolkit\bft-coff\src\test\resources\net\boricj\bft\coff\hello-world_i686-pc-windows-msvc.z7.obj
+
+(0000A3) S_COMPILE3:
+         Language: C
+         Target processor: Pentium III
+         Compiled for edit and continue: no
+         Compiled without debugging info: no
+         Compiled with LTCG: no
+         Compiled with /bzalign: no
+         Managed code present: no
+         Compiled with /GS: yes
+         Compiled with /hotpatch: no
+         Converted by CVTCIL: no
+         MSIL module: no
+         Compiled with /sdl: no
+         Compiled with pgo: no
+         .EXP module: no
+         Pad bits = 0x0000
+         Frontend Version: Major = 19, Minor = 43, Build = 34808, QFE = 0
+         Backend Version: Major = 19, Minor = 43, Build = 34808, QFE = 0
+         Version string: Microsoft (R) Optimizing Compiler
+
+
+*** FRAMEDATA
+
+ Address  Blk Size   cbLocals cbParams cbStkMax cbProlog  cbSavedRegs SEH C++EH FStart  Program
+00000000         14        0        8        0        3        0        N   N      Y     00000076
+
+*** SYMBOLS
+
+
+(000114) S_GPROC32_ID: [0000:00000000], Cb: 00000014, ID:             0x1003, main
+         Parent: 00000000, End: 00000000, Next: 00000000
+         Debug start: 00000003, Debug end: 00000012
+         Flags: Frame Ptr Present
+
+(000140)  S_FRAMEPROC:
+          Frame size = 0x00000000 bytes
+          Pad size = 0x00000000 bytes
+          Offset of pad in frame = 0x00000000
+          Size of callee save registers = 0x00000000
+          Address of exception handler = 0000:00000000
+          Function info: asynceh invalid_pgo_counts opt_for_speed Local=ebp Param=ebp (0x00128200)
+(00015E)  S_BPREL32: [00000008], Type:       T_INT4(0074), argc
+(00016F)  S_BPREL32: [0000000C], Type:             0x1000, argv
+
+(000180) S_PROC_ID_END
+
+
+*** LINES
+
+  0000:00000000-00000014, flags = 0000, fileid = 00000000
+
+      3 00000000      4 00000003      5 00000010      6 00000012
+
+*** FILECHKSUMS
+
+FileId  St.Offset  Cb  Type  ChksumBytes
+     0  00000001   20  SHA_256  4552D9D9FFF46F384802406DAA0D24C92B0F8970639A56924FFAA2CB3F19564C
+
+*** STRINGTABLE
+
+00000000
+00000001 C:\Users\jblbe\Documents\Workspace\binary-file-toolkit\bft-coff\src\test\resources\net\boricj\bft\coff\hello-world.c
+00000076 $T0 $ebp = $eip $T0 4 + ^ = $ebp $T0 ^ = $esp $T0 8 + =
+
+
+*** SYMBOLS
+
+
+(0002B4) S_BUILDINFO:             0x100D
+
+
+***** SECTION #5
+
+*** TYPES
+
+0x1000 : Length = 10, Leaf = 0x1002 LF_POINTER
+        Pointer (NEAR32), Size: 4
+        Element type : T_32PRCHAR(0470)
+
+0x1001 : Length = 14, Leaf = 0x1201 LF_ARGLIST argument count = 2
+        list[0] = T_INT4(0074)
+        list[1] = 0x1000
+
+0x1002 : Length = 14, Leaf = 0x1008 LF_PROCEDURE
+        Return type = T_INT4(0074), Call type = C Near
+        Func attr = none
+        # Parms = 2, Arg list type = 0x1001
+
+0x1003 : Length = 18, Leaf = 0x1601 LF_FUNC_ID
+        Type = 0x1002           Scope = global  main
+
+0x1004 : Length = 110, Leaf = 0x1605 LF_STRING_ID
+        C:\Users\jblbe\Documents\Workspace\binary-file-toolkit\bft-coff\src\test\resources\net\boricj\bft\coff
+        No sub string
+
+0x1005 : Length = 118, Leaf = 0x1605 LF_STRING_ID
+        C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.43.34808\bin\HostX64\x86\cl.exe
+        No sub string
+
+0x1006 : Length = 22, Leaf = 0x1605 LF_STRING_ID
+        .\hello-world.c
+        No sub string
+
+0x1007 : Length = 122, Leaf = 0x1605 LF_STRING_ID
+        C:\Users\jblbe\Documents\Workspace\binary-file-toolkit\bft-coff\src\test\resources\net\boricj\bft\coff\vc140.pdb
+        No sub string
+
+0x1008 : Length = 262, Leaf = 0x1605 LF_STRING_ID
+        -Z7 -Fo:C:\Users\jblbe\Documents\Workspace\binary-file-toolkit\bft-coff\src\test\resources\net\boricj\bft\coff\hello-world_i686-pc-windows-msvc.z7.obj -MT -I"C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.43.34808\include"
+        No sub string
+
+0x1009 : Length = 242, Leaf = 0x1605 LF_STRING_ID
+         -I"C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.43.34808\ATLMFC\include" -I"C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\VS\include" -I"C:\Program Files (x86)\Windows
+        No sub string
+
+0x100a : Length = 250, Leaf = 0x1605 LF_STRING_ID
+         Kits\10\include\10.0.22621.0\ucrt" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared" -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\winrt"
+        No sub string
+
+0x100b : Length = 18, Leaf = 0x1604 LF_SUBSTR_LIST
+        String ID's (count = 3): 0x1008 0x1009 0x100A
+
+0x100c : Length = 90, Leaf = 0x1605 LF_STRING_ID
+         -I"C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\cppwinrt" -TC -X
+        List of sub string ID's = 0x100B
+
+0x100d : Length = 26, Leaf = 0x1603 LF_BUILDINFO
+        String ID's (count = 5): 0x1004 0x1005 0x1006 0x1007 0x100C

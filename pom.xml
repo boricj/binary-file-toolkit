@@ -12,6 +12,7 @@
 		<module>bft-base-tests</module>
 		<module>bft-codeview</module>
 		<module>bft-coff</module>
+		<module>bft-ctf</module>
 		<module>bft-elf</module>
 	</modules>
 	<scm>
