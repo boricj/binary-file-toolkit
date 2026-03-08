@@ -1,0 +1,68 @@
+name: "Javadoc"
+
+on:
+  push:
+    branches:
+      - "master"
+      - "develop"
+    tags:
+      - "v*"
+  pull_request:
+
+jobs:
+  javadoc:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: "read"
+    steps:
+      -
+        name: "Checkout"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      -
+        name: "Setup JDK"
+        uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: "temurin"
+          cache: "maven"
+      -
+        name: "Build aggregate Javadoc"
+        run: mvn --batch-mode --update-snapshots javadoc:aggregate -Dmaven.javadoc.failOnWarnings=true
+      -
+        name: "Upload Javadoc artifact"
+        uses: actions/upload-artifact@v4
+        with:
+          name: "javadoc-site"
+          path: "target/reports/apidocs/**"
+          if-no-files-found: "error"
+        if: ${{ !cancelled() }}
+
+  publish-javadoc:
+    if: github.ref_name == 'master' || github.ref_name == 'develop' || github.ref_type == 'tag'
+    needs:
+      - "javadoc"
+    runs-on: ubuntu-latest
+    concurrency:
+      group: "javadoc-pages"
+      cancel-in-progress: false
+    permissions:
+      contents: "write"
+    steps:
+      -
+        name: "Download Javadoc artifact"
+        uses: actions/download-artifact@v4
+        with:
+          name: "javadoc-site"
+          path: "site-input"
+      -
+        name: "Publish Javadoc to gh-pages"
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: "${{ secrets.GITHUB_TOKEN }}"
+          publish_branch: "gh-pages"
+          publish_dir: "site-input"
+          destination_dir: "javadoc/${{ github.ref_name }}"
+          keep_files: true
