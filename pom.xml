@@ -26,6 +26,7 @@
 		<module>bft-base-tests</module>
 		<module>bft-coff</module>
 		<module>bft-elf</module>
+		<module>bft-omf</module>
 	</modules>
 	<scm>
 		<connection>scm:git:https://github.com/boricj/binary-file-toolkit.git</connection>
