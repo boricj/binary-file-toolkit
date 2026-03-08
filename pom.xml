@@ -38,6 +38,7 @@
 		</repository>
 	</distributionManagement>
 	<properties>
+		<jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
 		<junit.version>5.11.3</junit.version>
 		<maven-dependency-plugin.version>3.8.1</maven-dependency-plugin.version>
 		<maven-enforcer-plugin.version>3.5.0</maven-enforcer-plugin.version>
@@ -173,6 +174,26 @@
 							<goals>
 								<goal>check</goal>
 							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.jacoco</groupId>
+					<artifactId>jacoco-maven-plugin</artifactId>
+					<version>${jacoco-maven-plugin.version}</version>
+					<executions>
+						<execution>
+							<id>prepare-agent</id>
+							<goals>
+								<goal>prepare-agent</goal>
+							</goals>
+						</execution>
+						<execution>
+							<id>report</id>
+							<goals>
+								<goal>report</goal>
+							</goals>
+							<phase>test</phase>
 						</execution>
 					</executions>
 				</plugin>
