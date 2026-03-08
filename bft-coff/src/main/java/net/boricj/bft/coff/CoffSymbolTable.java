@@ -40,12 +40,24 @@ import net.boricj.bft.coff.constants.CoffStorageClass;
 
 import static net.boricj.bft.Utils.roundUp;
 
+/**
+ * COFF symbol table containing symbol entries.
+ * Symbols represent functions, variables, sections, and other named entities.
+ */
 public class CoffSymbolTable implements IndirectList<CoffSymbol>, Writable {
+	/** Length in bytes of one COFF symbol record. */
 	public static final int RECORD_LENGTH = 18;
 
+	/**
+	 * A COFF symbol table entry.
+	 * Base class for symbol types including file, section, and function symbols.
+	 */
 	public class CoffSymbol implements Comparable<CoffSymbol> {
+		/** Section number used for undefined symbols. */
 		public static final short IMAGE_SYM_UNDEFINED = 0;
+		/** Section number used for absolute symbols. */
 		public static final short IMAGE_SYM_ABSOLUTE = -1;
+		/** Section number used for debug symbols. */
 		public static final short IMAGE_SYM_DEBUG = -2;
 
 		private final String name;
@@ -54,6 +66,15 @@ public class CoffSymbolTable implements IndirectList<CoffSymbol>, Writable {
 		private final short type;
 		private final CoffStorageClass storageClass;
 
+		/**
+		 * Creates a COFF symbol.
+		 *
+		 * @param name symbol name
+		 * @param value symbol value
+		 * @param sectionNumber symbol section number
+		 * @param type symbol type
+		 * @param storageClass symbol storage class
+		 */
 		public CoffSymbol(String name, int value, short sectionNumber, short type, CoffStorageClass storageClass) {
 			Objects.requireNonNull(name);
 			Objects.requireNonNull(storageClass);
@@ -65,6 +86,18 @@ public class CoffSymbolTable implements IndirectList<CoffSymbol>, Writable {
 			this.storageClass = storageClass;
 		}
 
+		/**
+		 * Creates a COFF symbol from parsed record fields.
+		 *
+		 * @param name symbol name
+		 * @param value symbol value
+		 * @param sectionNumber symbol section number
+		 * @param type symbol type
+		 * @param storageClass symbol storage class
+		 * @param numberOfAuxSymbols number of auxiliary records
+		 * @param dataInput input stream positioned after the symbol header
+		 * @throws IOException if an I/O error occurs
+		 */
 		public CoffSymbol(
 				String name,
 				int value,
@@ -81,30 +114,67 @@ public class CoffSymbolTable implements IndirectList<CoffSymbol>, Writable {
 			}
 		}
 
+		/**
+		 * Returns the symbol name.
+		 *
+		 * @return symbol name
+		 */
 		public String getName() {
 			return name;
 		}
 
+		/**
+		 * Returns the symbol value (typically an address or offset).
+		 *
+		 * @return symbol value
+		 */
 		public int getValue() {
 			return value;
 		}
 
+		/**
+		 * Returns the section number this symbol is defined in.
+		 * Special values include IMAGE_SYM_UNDEFINED (0), IMAGE_SYM_ABSOLUTE (-1), and IMAGE_SYM_DEBUG (-2).
+		 *
+		 * @return section number
+		 */
 		public short getSectionNumber() {
 			return sectionNumber;
 		}
 
+		/**
+		 * Returns the symbol type information.
+		 *
+		 * @return symbol type
+		 */
 		public short getType() {
 			return type;
 		}
 
+		/**
+		 * Returns the storage class of this symbol.
+		 *
+		 * @return storage class
+		 */
 		public CoffStorageClass getStorageClass() {
 			return storageClass;
 		}
 
+		/**
+		 * Returns the number of auxiliary symbol records following this symbol.
+		 *
+		 * @return number of auxiliary symbol records
+		 */
 		public byte getNumberOfAuxSymbols() {
 			return 0;
 		}
 
+		/**
+		 * Writes auxiliary symbol records for this symbol.
+		 *
+		 * @param dataOutput output stream to write to
+		 * @throws IOException if an I/O error occurs
+		 */
 		protected void writeAuxiliarySymbolRecord(DataOutput dataOutput) throws IOException {}
 
 		@Override
@@ -137,17 +207,36 @@ public class CoffSymbolTable implements IndirectList<CoffSymbol>, Writable {
 		}
 	}
 
+	/** File symbol with auxiliary record containing source filename. */
 	public class CoffSymbolFile extends CoffSymbol {
 		private static final Charset CHARSET = StandardCharsets.UTF_8;
 
 		private final String fileName;
 
+		/**
+		 * Creates a file symbol.
+		 *
+		 * @param name symbol name
+		 * @param fileName source file name
+		 */
 		protected CoffSymbolFile(String name, String fileName) {
 			super(name, 0, IMAGE_SYM_DEBUG, (short) 0, CoffStorageClass.IMAGE_SYM_CLASS_FILE);
 
 			this.fileName = fileName;
 		}
 
+		/**
+		 * Creates a file symbol from parsed record fields.
+		 *
+		 * @param name symbol name
+		 * @param value symbol value
+		 * @param sectionNumber symbol section number
+		 * @param type symbol type
+		 * @param storageClass symbol storage class
+		 * @param numberOfAuxSymbols number of auxiliary records
+		 * @param dataInput input stream positioned after the symbol header
+		 * @throws IOException if an I/O error occurs
+		 */
 		public CoffSymbolFile(
 				String name,
 				int value,
@@ -171,6 +260,11 @@ public class CoffSymbolTable implements IndirectList<CoffSymbol>, Writable {
 			return CoffStorageClass.IMAGE_SYM_CLASS_FILE;
 		}
 
+		/**
+		 * Returns the source file name stored in this symbol.
+		 *
+		 * @return source file name
+		 */
 		public String getFileName() {
 			return fileName;
 		}
@@ -191,9 +285,15 @@ public class CoffSymbolTable implements IndirectList<CoffSymbol>, Writable {
 		}
 	}
 
+	/** Section symbol with one auxiliary section-definition record. */
 	public class CoffSymbolSection extends CoffSymbol {
 		private final CoffSection section;
 
+		/**
+		 * Creates a section symbol for the given section.
+		 *
+		 * @param section section referenced by the symbol
+		 */
 		public CoffSymbolSection(CoffSection section) {
 			super(
 					section.getName(),
@@ -205,6 +305,18 @@ public class CoffSymbolTable implements IndirectList<CoffSymbol>, Writable {
 			this.section = section;
 		}
 
+		/**
+		 * Creates a section symbol from parsed record fields.
+		 *
+		 * @param name symbol name
+		 * @param value symbol value
+		 * @param sectionNumber symbol section number
+		 * @param type symbol type
+		 * @param storageClass symbol storage class
+		 * @param numberOfAuxSymbols number of auxiliary records
+		 * @param dataInput input stream positioned after the symbol header
+		 * @throws IOException if an I/O error occurs
+		 */
 		public CoffSymbolSection(
 				String name,
 				int value,
@@ -245,7 +357,20 @@ public class CoffSymbolTable implements IndirectList<CoffSymbol>, Writable {
 		}
 	}
 
+	/** Function symbol with one auxiliary function-definition record. */
 	public class CoffSymbolFunction extends CoffSymbol {
+		/**
+		 * Creates a function symbol from parsed record fields.
+		 *
+		 * @param name symbol name
+		 * @param value symbol value
+		 * @param sectionNumber symbol section number
+		 * @param type symbol type
+		 * @param storageClass symbol storage class
+		 * @param numberOfAuxSymbols number of auxiliary records
+		 * @param dataInput input stream positioned after the symbol header
+		 * @throws IOException if an I/O error occurs
+		 */
 		public CoffSymbolFunction(
 				String name,
 				int value,
@@ -278,10 +403,23 @@ public class CoffSymbolTable implements IndirectList<CoffSymbol>, Writable {
 	private final Map<CoffSymbol, Integer> reverseLookup = new IdentityHashMap<>();
 	private int pointerToSymbolTable;
 
+	/**
+	 * Creates an empty symbol table for a builder-backed COFF file.
+	 *
+	 * @param coff parent COFF file
+	 * @param builder COFF file builder
+	 */
 	protected CoffSymbolTable(CoffFile coff, CoffFile.Builder builder) {
 		this.coff = coff;
 	}
 
+	/**
+	 * Parses a symbol table from a parser-backed COFF file.
+	 *
+	 * @param coff parent COFF file
+	 * @param parser COFF file parser
+	 * @throws IOException if an I/O error occurs while parsing symbols
+	 */
 	protected CoffSymbolTable(CoffFile coff, CoffFile.Parser parser) throws IOException {
 		this.coff = coff;
 		this.pointerToSymbolTable = parser.pointerToSymbolTable;
@@ -362,6 +500,11 @@ public class CoffSymbolTable implements IndirectList<CoffSymbol>, Writable {
 		return pointerToSymbolTable;
 	}
 
+	/**
+	 * Sets the symbol table file offset.
+	 *
+	 * @param offset symbol table file offset
+	 */
 	public void setOffset(long offset) {
 		pointerToSymbolTable = (int) offset;
 	}
@@ -398,6 +541,16 @@ public class CoffSymbolTable implements IndirectList<CoffSymbol>, Writable {
 		return Collections.unmodifiableList(symbols);
 	}
 
+	/**
+	 * Adds a generic symbol.
+	 *
+	 * @param name symbol name
+	 * @param offset symbol value
+	 * @param section symbol section
+	 * @param type symbol type
+	 * @param storageClass symbol storage class
+	 * @return added symbol
+	 */
 	public CoffSymbol addSymbol(
 			String name, int offset, CoffSection section, byte type, CoffStorageClass storageClass) {
 		CoffSectionTable sectionTable = coff.getSections();
@@ -407,6 +560,12 @@ public class CoffSymbolTable implements IndirectList<CoffSymbol>, Writable {
 		return symbol;
 	}
 
+	/**
+	 * Adds an undefined external symbol.
+	 *
+	 * @param name symbol name
+	 * @return added symbol
+	 */
 	public CoffSymbol addUndefined(String name) {
 		CoffSymbol symbol = new CoffSymbol(
 				name, 0, CoffSymbol.IMAGE_SYM_UNDEFINED, (byte) 0x20, CoffStorageClass.IMAGE_SYM_CLASS_EXTERNAL);
@@ -414,6 +573,13 @@ public class CoffSymbolTable implements IndirectList<CoffSymbol>, Writable {
 		return symbol;
 	}
 
+	/**
+	 * Adds an absolute symbol.
+	 *
+	 * @param name symbol name
+	 * @param value absolute value
+	 * @return added symbol
+	 */
 	public CoffSymbol addAbsolute(String name, int value) {
 		CoffSymbol symbol = new CoffSymbol(
 				name, value, CoffSymbol.IMAGE_SYM_ABSOLUTE, (byte) 0x00, CoffStorageClass.IMAGE_SYM_CLASS_STATIC);
@@ -421,12 +587,25 @@ public class CoffSymbolTable implements IndirectList<CoffSymbol>, Writable {
 		return symbol;
 	}
 
+	/**
+	 * Adds a file symbol.
+	 *
+	 * @param name symbol name
+	 * @param fileName source file name
+	 * @return added symbol
+	 */
 	public CoffSymbol addFile(String name, String fileName) {
 		CoffSymbol symbol = new CoffSymbolFile(name, fileName);
 		add(symbol, this);
 		return symbol;
 	}
 
+	/**
+	 * Adds a section symbol.
+	 *
+	 * @param section referenced section
+	 * @return added symbol
+	 */
 	public CoffSymbol addSection(CoffSection section) {
 		CoffSymbol symbol = new CoffSymbolSection(section);
 		add(symbol, this);

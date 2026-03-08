@@ -16,9 +16,15 @@ package net.boricj.bft.coff.constants;
 import net.boricj.bft.coff.machines.amd64.CoffRelocationType_amd64;
 import net.boricj.bft.coff.machines.i386.CoffRelocationType_i386;
 
+/**
+ * COFF machine identifiers.
+ */
 public enum CoffMachine {
+	/** Unknown machine type. */
 	IMAGE_FILE_MACHINE_UNKNOWN((short) 0x0, null),
+	/** Intel i386 machine type. */
 	IMAGE_FILE_MACHINE_I386((short) 0x14c, CoffRelocationType_i386.class),
+	/** AMD64 machine type. */
 	IMAGE_FILE_MACHINE_AMD64((short) 0x8664, CoffRelocationType_amd64.class),
 	;
 
@@ -30,14 +36,30 @@ public enum CoffMachine {
 		this.relocationType = relocationType;
 	}
 
+	/**
+	 * Gets the encoded COFF machine value.
+	 *
+	 * @return machine value
+	 */
 	public short getValue() {
 		return value;
 	}
 
+	/**
+	 * Gets the relocation type class associated with this machine.
+	 *
+	 * @return relocation type class, or {@code null} if unknown
+	 */
 	public Class<? extends CoffRelocationType> getRelocationTypeClass() {
 		return relocationType;
 	}
 
+	/**
+	 * Resolves a machine identifier from its encoded value.
+	 *
+	 * @param value encoded machine value
+	 * @return matching machine identifier
+	 */
 	public static CoffMachine valueFrom(short value) {
 		for (CoffMachine machine : values()) {
 			if (machine.getValue() == value) {

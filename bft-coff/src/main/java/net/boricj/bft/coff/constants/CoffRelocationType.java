@@ -13,8 +13,21 @@
  */
 package net.boricj.bft.coff.constants;
 
+/**
+ * Common contract for COFF relocation type enumerations.
+ */
 public interface CoffRelocationType {
+	/**
+	 * Gets the machine this relocation type applies to.
+	 *
+	 * @return COFF machine identifier
+	 */
 	public CoffMachine getMachine();
 
+	/**
+	 * Gets the encoded relocation type value.
+	 *
+	 * @return relocation type value
+	 */
 	public short getValue();
 }

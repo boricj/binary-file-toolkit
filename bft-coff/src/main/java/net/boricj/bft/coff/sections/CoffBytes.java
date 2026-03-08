@@ -23,9 +23,21 @@ import net.boricj.bft.coff.CoffRelocationTable;
 import net.boricj.bft.coff.CoffSection;
 import net.boricj.bft.coff.constants.CoffSectionFlags;
 
+/**
+ * A COFF section containing raw byte data.
+ * Represents sections with initialized data such as code or data segments.
+ */
 public class CoffBytes extends CoffSection {
 	private final byte[] bytes;
 
+	/**
+	 * Creates a bytes section with in-memory data.
+	 *
+	 * @param coff parent COFF file
+	 * @param name section name
+	 * @param characteristics section characteristics flags
+	 * @param bytes section data bytes
+	 */
 	public CoffBytes(CoffFile coff, String name, CoffSectionFlags characteristics, byte[] bytes) {
 		super(coff, name, 0, 0, 0, characteristics);
 		Objects.requireNonNull(bytes);
@@ -34,6 +46,23 @@ public class CoffBytes extends CoffSection {
 		this.bytes = bytes;
 	}
 
+	/**
+	 * Creates a bytes section by reading from a COFF parser.
+	 *
+	 * @param coff parent COFF file
+	 * @param parser COFF file parser
+	 * @param name section name
+	 * @param physicalAddress section physical address
+	 * @param virtualAddress section virtual address
+	 * @param sizeOfRawData section size in bytes
+	 * @param pointerToRawData file offset to section bytes
+	 * @param pointerToRelocations file offset to relocations
+	 * @param pointerToLineNumbers file offset to line numbers
+	 * @param numberOfRelocations relocation count
+	 * @param numberOfLinenumbers line number count
+	 * @param characteristics section characteristics flags
+	 * @throws IOException if an I/O error occurs while reading section data
+	 */
 	public CoffBytes(
 			CoffFile coff,
 			CoffFile.Parser parser,
@@ -59,6 +88,11 @@ public class CoffBytes extends CoffSection {
 		this.relocationTable = new CoffRelocationTable(coff, parser, this, pointerToRelocations, numberOfRelocations);
 	}
 
+	/**
+	 * Returns the raw byte data contained in this section.
+	 *
+	 * @return section data bytes
+	 */
 	public byte[] getBytes() {
 		return bytes;
 	}

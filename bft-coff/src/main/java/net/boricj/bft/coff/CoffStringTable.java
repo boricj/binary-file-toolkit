@@ -36,7 +36,12 @@ import java.util.TreeMap;
 import net.boricj.bft.ByteInputStream;
 import net.boricj.bft.Writable;
 
+/**
+ * COFF string table for storing symbol names that don't fit in the symbol table entry.
+ * Long names are stored here and referenced by offset.
+ */
 public class CoffStringTable implements Iterable<Integer>, Writable {
+	/** Default charset used to encode and decode string table entries. */
 	public static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
 	private final CoffFile coff;
@@ -44,11 +49,24 @@ public class CoffStringTable implements Iterable<Integer>, Writable {
 	private final Map<String, Integer> lookup = new HashMap<>();
 	private final Charset charset;
 
+	/**
+	 * Creates an empty string table for a builder-backed COFF file.
+	 *
+	 * @param coff COFF file instance
+	 * @param builder COFF file builder
+	 */
 	protected CoffStringTable(CoffFile coff, CoffFile.Builder builder) {
 		this.coff = coff;
 		this.charset = builder.getCharset();
 	}
 
+	/**
+	 * Parses a string table from a parser-backed COFF file.
+	 *
+	 * @param coff COFF file instance
+	 * @param parser COFF file parser
+	 * @throws IOException if an I/O error occurs
+	 */
 	protected CoffStringTable(CoffFile coff, CoffFile.Parser parser) throws IOException {
 		this.coff = coff;
 		this.charset = parser.getCharset();
@@ -104,6 +122,12 @@ public class CoffStringTable implements Iterable<Integer>, Writable {
 		}
 	}
 
+	/**
+	 * Adds a string to the table.
+	 *
+	 * @param string string to add
+	 * @return offset where the string was inserted
+	 */
 	public int add(String string) {
 		Objects.requireNonNull(string);
 
@@ -122,6 +146,12 @@ public class CoffStringTable implements Iterable<Integer>, Writable {
 		return nextKey;
 	}
 
+	/**
+	 * Returns the string at the given offset.
+	 *
+	 * @param index string table offset
+	 * @return decoded string at {@code index}
+	 */
 	public String get(int index) {
 		Entry<Integer, byte[]> entry = strings.floorEntry(index);
 		if (entry == null || index < 0) {
@@ -138,6 +168,12 @@ public class CoffStringTable implements Iterable<Integer>, Writable {
 		return string;
 	}
 
+	/**
+	 * Finds the offset for a string.
+	 *
+	 * @param string string to look up
+	 * @return offset of {@code string}
+	 */
 	public int find(String string) {
 		Integer index = lookup.get(string);
 		if (index == null) {
@@ -151,6 +187,12 @@ public class CoffStringTable implements Iterable<Integer>, Writable {
 		return strings.keySet().iterator();
 	}
 
+	/**
+	 * Encodes a section name for use in a section header.
+	 *
+	 * @param name section name
+	 * @return encoded 8-byte section name field
+	 */
 	public byte[] encodeSecName(String name) {
 		byte[] bytes = name.getBytes(charset);
 		if (bytes.length > 8) {
@@ -164,6 +206,13 @@ public class CoffStringTable implements Iterable<Integer>, Writable {
 		return bytes;
 	}
 
+	/**
+	 * Decodes a section name from a section header field.
+	 *
+	 * @param bytes encoded section name bytes
+	 * @return decoded section name
+	 * @throws IOException if an I/O error occurs while decoding
+	 */
 	public String decodeSecName(byte[] bytes) throws IOException {
 		if (bytes[0] == '/') {
 			ByteInputStream bis = ByteInputStream.asLittleEndian(bytes);
@@ -177,6 +226,13 @@ public class CoffStringTable implements Iterable<Integer>, Writable {
 		}
 	}
 
+	/**
+	 * Encodes a symbol name for use in a symbol record.
+	 *
+	 * @param name symbol name
+	 * @return encoded 8-byte symbol name field
+	 * @throws IOException if an I/O error occurs while encoding
+	 */
 	public byte[] encodeSymName(String name) throws IOException {
 		byte[] bytes = name.getBytes(charset);
 		if (bytes.length < 8) {
@@ -194,6 +250,13 @@ public class CoffStringTable implements Iterable<Integer>, Writable {
 		}
 	}
 
+	/**
+	 * Decodes a symbol name from a symbol record.
+	 *
+	 * @param bytes encoded symbol name bytes
+	 * @return decoded symbol name
+	 * @throws IOException if an I/O error occurs while decoding
+	 */
 	public String decodeSymName(byte[] bytes) throws IOException {
 		if (bytes[0] == 0) {
 			InputStream inputStream = new ByteArrayInputStream(bytes, 4, 4);

@@ -34,17 +34,34 @@ import net.boricj.bft.coff.sections.CoffBytes;
 
 import static net.boricj.bft.coff.CoffRelocationTable.EXTENDED_RELOCATIONS_COUNT;
 
+/**
+ * COFF section table containing all sections in the file.
+ * Sections represent code, data, and other segments.
+ */
 public class CoffSectionTable implements IndirectList<CoffSection>, Writable {
+	/** Length in bytes of one COFF section header record. */
 	public static final int RECORD_LENGTH = 40;
 
 	private final CoffFile coff;
 	private final List<CoffSection> table = new ArrayList<>();
 	private final Map<CoffSection, Integer> reverseLookup = new IdentityHashMap<>();
 
+	/**
+	 * Creates an empty section table for a builder-backed COFF file.
+	 *
+	 * @param coff parent COFF file
+	 * @param builder COFF file builder
+	 */
 	protected CoffSectionTable(CoffFile coff, CoffFile.Builder builder) {
 		this.coff = coff;
 	}
 
+	/**
+	 * Creates a lazily loaded section table for a parser-backed COFF file.
+	 *
+	 * @param coff parent COFF file
+	 * @param parser COFF file parser
+	 */
 	protected CoffSectionTable(CoffFile coff, CoffFile.Parser parser) {
 		this.coff = coff;
 		this.table.addAll(Stream.generate(() -> (CoffSection) null)
@@ -90,6 +107,14 @@ public class CoffSectionTable implements IndirectList<CoffSection>, Writable {
 		}
 	}
 
+	/**
+	 * Returns the section at a 1-based index, loading it from the file if needed.
+	 *
+	 * @param index 1-based section index
+	 * @param parser COFF file parser
+	 * @return section at {@code index}
+	 * @throws IOException if an I/O error occurs while loading section data
+	 */
 	public CoffSection get(int index, CoffFile.Parser parser) throws IOException {
 		index -= 1;
 		CoffSection section = table.get(index);

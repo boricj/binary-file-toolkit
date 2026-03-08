@@ -25,6 +25,10 @@ import net.boricj.bft.ByteOutputStream;
 import net.boricj.bft.Writable;
 import net.boricj.bft.coff.constants.CoffMachine;
 
+/**
+ * COFF file header containing machine type, timestamp, and characteristics.
+ * The header appears at the start of a COFF object file.
+ */
 public class CoffHeader implements Writable {
 	private final CoffFile coff;
 
@@ -32,6 +36,12 @@ public class CoffHeader implements Writable {
 	private int timeDateStamp;
 	private short characteristics;
 
+	/**
+	 * Constructs a COFF header from a builder.
+	 *
+	 * @param coff the parent COFF file
+	 * @param builder the builder containing header configuration
+	 */
 	protected CoffHeader(CoffFile coff, CoffFile.Builder builder) {
 		this.coff = coff;
 		this.machine = builder.getMachine();
@@ -39,6 +49,13 @@ public class CoffHeader implements Writable {
 		this.characteristics = builder.getCharacteristics();
 	}
 
+	/**
+	 * Constructs a COFF header by parsing from a parser.
+	 *
+	 * @param coff the parent COFF file
+	 * @param parser the parser containing the input stream
+	 * @throws IOException if an I/O error occurs during parsing
+	 */
 	protected CoffHeader(CoffFile coff, CoffFile.Parser parser) throws IOException {
 		this.coff = coff;
 
@@ -54,22 +71,49 @@ public class CoffHeader implements Writable {
 		this.characteristics = dataInput.readShort();
 	}
 
+	/**
+	 * Returns the machine type for this COFF file.
+	 *
+	 * @return the machine type
+	 */
 	public CoffMachine getMachine() {
 		return machine;
 	}
 
+	/**
+	 * Returns the timestamp value stored in the header.
+	 *
+	 * @return the timestamp value
+	 */
 	public int getTimeDateStamp() {
 		return timeDateStamp;
 	}
 
+	/**
+	 * Sets the timestamp value in the header.
+	 *
+	 * @param timeDateStamp the new timestamp value
+	 */
 	public void setTimeDateStamp(int timeDateStamp) {
 		this.timeDateStamp = timeDateStamp;
 	}
 
+	/**
+	 * Wraps an output stream with little-endian byte order.
+	 *
+	 * @param outputStream the output stream to wrap
+	 * @return wrapped output stream
+	 */
 	protected ByteOutputStream wrap(OutputStream outputStream) {
 		return ByteOutputStream.asLittleEndian(outputStream);
 	}
 
+	/**
+	 * Wraps an input stream with little-endian byte order.
+	 *
+	 * @param inputStream the input stream to wrap
+	 * @return wrapped input stream
+	 */
 	protected ByteInputStream wrap(InputStream inputStream) {
 		return ByteInputStream.asLittleEndian(inputStream);
 	}

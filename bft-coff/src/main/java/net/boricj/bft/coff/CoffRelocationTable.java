@@ -31,15 +31,32 @@ import net.boricj.bft.coff.CoffSymbolTable.CoffSymbol;
 import net.boricj.bft.coff.constants.CoffMachine;
 import net.boricj.bft.coff.constants.CoffRelocationType;
 
+/**
+ * COFF relocation table containing relocation entries for a section.
+ * Relocations specify how to adjust addresses when linking.
+ */
 public class CoffRelocationTable implements IndirectList<CoffRel>, Writable {
+	/** Size in bytes of a single relocation entry. */
 	public static final int RECORD_SIZE = 10;
+	/** Special count value indicating extended relocations format is used. */
 	public static final int EXTENDED_RELOCATIONS_COUNT = 0xFFFF;
 
+	/**
+	 * A single COFF relocation entry.
+	 * Specifies a location to adjust and the symbol it references.
+	 */
 	public class CoffRel {
 		private final int virtualAddress;
 		private final int symbolTableIndex;
 		private final CoffRelocationType type;
 
+		/**
+		 * Creates a new COFF relocation entry.
+		 *
+		 * @param virtualAddress the virtual address where the relocation applies
+		 * @param symbolTableIndex the index into the symbol table
+		 * @param type the relocation type
+		 */
 		protected CoffRel(int virtualAddress, int symbolTableIndex, CoffRelocationType type) {
 			Objects.requireNonNull(type);
 
@@ -52,20 +69,41 @@ public class CoffRelocationTable implements IndirectList<CoffRel>, Writable {
 			this.type = type;
 		}
 
+		/**
+		 * Writes this relocation entry to a data output.
+		 *
+		 * @param dataOutput the data output to write to
+		 * @throws IOException if an I/O error occurs
+		 */
 		protected void write(DataOutput dataOutput) throws IOException {
 			dataOutput.writeInt(virtualAddress);
 			dataOutput.writeInt(symbolTableIndex);
 			dataOutput.writeShort(type.getValue());
 		}
 
+		/**
+		 * Returns the virtual address where this relocation applies.
+		 *
+		 * @return the virtual address
+		 */
 		public int getVirtualAddress() {
 			return virtualAddress;
 		}
 
+		/**
+		 * Returns the index into the symbol table referenced by this relocation.
+		 *
+		 * @return the symbol table index
+		 */
 		public int getSymbolTableIndex() {
 			return symbolTableIndex;
 		}
 
+		/**
+		 * Returns the relocation type specifying how to adjust the address.
+		 *
+		 * @return the relocation type
+		 */
 		public CoffRelocationType getType() {
 			return type;
 		}
@@ -76,6 +114,12 @@ public class CoffRelocationTable implements IndirectList<CoffRel>, Writable {
 	private final List<CoffRel> relocations = new ArrayList<>();
 	private int pointerToRelocations;
 
+	/**
+	 * Creates a new empty COFF relocation table for a section.
+	 *
+	 * @param coff the parent COFF file
+	 * @param section the section this relocation table belongs to
+	 */
 	public CoffRelocationTable(CoffFile coff, CoffSection section) {
 		Objects.requireNonNull(coff);
 		Objects.requireNonNull(section);
@@ -84,6 +128,16 @@ public class CoffRelocationTable implements IndirectList<CoffRel>, Writable {
 		this.section = section;
 	}
 
+	/**
+	 * Parses a COFF relocation table from a parser.
+	 *
+	 * @param coff the parent COFF file
+	 * @param parser the parser containing the input stream
+	 * @param section the section this relocation table belongs to
+	 * @param pointerToRelocations file offset to the relocations
+	 * @param numberOfRelocations number of relocation entries
+	 * @throws IOException if an I/O error occurs during parsing
+	 */
 	public CoffRelocationTable(
 			CoffFile coff,
 			CoffFile.Parser parser,
@@ -132,6 +186,13 @@ public class CoffRelocationTable implements IndirectList<CoffRel>, Writable {
 		}
 	}
 
+	/**
+	 * Adds a relocation entry referencing a symbol.
+	 *
+	 * @param virtualAddress the virtual address where the relocation applies
+	 * @param symbol the symbol to reference
+	 * @param type the relocation type
+	 */
 	public void add(int virtualAddress, CoffSymbol symbol, CoffRelocationType type) {
 		CoffSymbolTable symbolTable = coff.getSymbols();
 		int symbolTableIndex = symbolTable.indexOf(symbol);
@@ -142,6 +203,13 @@ public class CoffRelocationTable implements IndirectList<CoffRel>, Writable {
 		relocations.add(new CoffRel(virtualAddress, symbolTableIndex, type));
 	}
 
+	/**
+	 * Adds a relocation entry by symbol table index.
+	 *
+	 * @param virtualAddress the virtual address where the relocation applies
+	 * @param symbolTableIndex the index into the symbol table
+	 * @param type the relocation type
+	 */
 	public void add(int virtualAddress, int symbolTableIndex, CoffRelocationType type) {
 		relocations.add(new CoffRel(virtualAddress, symbolTableIndex, type));
 	}
@@ -151,6 +219,11 @@ public class CoffRelocationTable implements IndirectList<CoffRel>, Writable {
 		return pointerToRelocations;
 	}
 
+	/**
+	 * Sets the file offset for this relocation table.
+	 *
+	 * @param offset the new file offset
+	 */
 	public void setOffset(long offset) {
 		pointerToRelocations = (int) offset;
 	}
@@ -187,10 +260,20 @@ public class CoffRelocationTable implements IndirectList<CoffRel>, Writable {
 		return Collections.unmodifiableList(relocations);
 	}
 
+	/**
+	 * Returns the parent COFF file.
+	 *
+	 * @return the COFF file
+	 */
 	public CoffFile getCoffFile() {
 		return coff;
 	}
 
+	/**
+	 * Returns the section this relocation table belongs to.
+	 *
+	 * @return the section
+	 */
 	public CoffSection getSection() {
 		return section;
 	}
