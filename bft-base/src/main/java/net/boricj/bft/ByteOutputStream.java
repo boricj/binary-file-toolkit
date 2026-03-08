@@ -112,6 +112,15 @@ public class ByteOutputStream extends FilterOutputStream implements DataOutput {
 		writeByte(0);
 	}
 
+	public void writeByteLengthString(String value, Charset charset) throws IOException {
+		byte[] bytes = value.getBytes(charset);
+		if (bytes.length > 0xFF) {
+			throw new IllegalArgumentException("Byte-length string too long: " + bytes.length);
+		}
+		writeByte(bytes.length);
+		write(bytes);
+	}
+
 	public void alignTo(int i) throws IOException {
 		if (count % i != 0) {
 			int padding = i - (count % i);

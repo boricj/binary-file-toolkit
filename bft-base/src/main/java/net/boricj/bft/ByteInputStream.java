@@ -197,6 +197,13 @@ public class ByteInputStream extends FilterInputStream implements DataInput {
 		return buffer.toString(utf8.name());
 	}
 
+	public String readByteLengthString(Charset charset) throws IOException {
+		int length = readUnsignedByte();
+		byte[] data = new byte[length];
+		readFully(data);
+		return new String(data, charset);
+	}
+
 	public ByteInputStream slice(int length) throws IOException {
 		byte[] data = new byte[length];
 		readFully(data);
