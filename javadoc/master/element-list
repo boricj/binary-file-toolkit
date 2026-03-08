@@ -1,0 +1,12 @@
+net.boricj.bft
+net.boricj.bft.coff
+net.boricj.bft.coff.constants
+net.boricj.bft.coff.machines.amd64
+net.boricj.bft.coff.machines.i386
+net.boricj.bft.coff.sections
+net.boricj.bft.elf
+net.boricj.bft.elf.constants
+net.boricj.bft.elf.machines.amd64
+net.boricj.bft.elf.machines.i386
+net.boricj.bft.elf.machines.mips
+net.boricj.bft.elf.sections
