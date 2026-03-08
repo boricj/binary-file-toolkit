@@ -16,6 +16,7 @@ package net.boricj.bft.elf.sections;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Objects;
 
 import net.boricj.bft.elf.ElfFile;
 import net.boricj.bft.elf.ElfSection;
@@ -43,6 +44,7 @@ public class ElfProgBits extends ElfSection {
 			long entsize,
 			byte[] bytes) {
 		super(elf, name, flags, addr, offset, addralign, entsize);
+		Objects.requireNonNull(bytes);
 
 		this.bytes = bytes;
 	}

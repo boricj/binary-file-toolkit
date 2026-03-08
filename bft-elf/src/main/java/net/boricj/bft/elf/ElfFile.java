@@ -53,6 +53,12 @@ public class ElfFile {
 		protected short e_shentsize;
 
 		public Builder(ElfClass class_, ElfData data, ElfOsAbi osAbi, ElfType type, ElfMachine machine) {
+			Objects.requireNonNull(class_);
+			Objects.requireNonNull(data);
+			Objects.requireNonNull(osAbi);
+			Objects.requireNonNull(type);
+			Objects.requireNonNull(machine);
+
 			this.ident_class = class_;
 			this.ident_data = data;
 			this.ident_version = ElfVersion.EV_CURRENT;
