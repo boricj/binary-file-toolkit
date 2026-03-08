@@ -24,29 +24,65 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 
+/**
+ * Input stream with support for little/big-endian multi-byte reads and position tracking.
+ * <p>
+ * Wraps an {@link InputStream} and provides {@link DataInput} operations with configurable
+ * byte order and automatic byte counting.
+ */
 public class ByteInputStream extends FilterInputStream implements DataInput {
 	private final byte[] bytes = new byte[8];
 	private final ByteBuffer byteBuffer;
 	private int count = 0;
 
+	/**
+	 * Creates a byte input stream with the specified byte order.
+	 *
+	 * @param inputStream the underlying input stream
+	 * @param byteOrder the byte order for multi-byte reads
+	 */
 	public ByteInputStream(InputStream inputStream, ByteOrder byteOrder) {
 		super(inputStream);
 		this.byteBuffer = ByteBuffer.wrap(bytes);
 		this.byteBuffer.order(byteOrder);
 	}
 
+	/**
+	 * Creates a little-endian byte input stream from an input stream.
+	 *
+	 * @param inputStream the underlying input stream
+	 * @return a little-endian ByteInputStream
+	 */
 	public static ByteInputStream asLittleEndian(InputStream inputStream) {
 		return new ByteInputStream(inputStream, ByteOrder.LITTLE_ENDIAN);
 	}
 
+	/**
+	 * Creates a little-endian byte input stream from a byte array.
+	 *
+	 * @param bytes the byte array to read from
+	 * @return a little-endian ByteInputStream
+	 */
 	public static ByteInputStream asLittleEndian(byte[] bytes) {
 		return new ByteInputStream(new ByteArrayInputStream(bytes), ByteOrder.LITTLE_ENDIAN);
 	}
 
+	/**
+	 * Creates a big-endian byte input stream from an input stream.
+	 *
+	 * @param inputStream the underlying input stream
+	 * @return a big-endian ByteInputStream
+	 */
 	public static ByteInputStream asBigEndian(InputStream inputStream) {
 		return new ByteInputStream(inputStream, ByteOrder.BIG_ENDIAN);
 	}
 
+	/**
+	 * Creates a big-endian byte input stream from a byte array.
+	 *
+	 * @param bytes the byte array to read from
+	 * @return a big-endian ByteInputStream
+	 */
 	public static ByteInputStream asBigEndian(byte[] bytes) {
 		return new ByteInputStream(new ByteArrayInputStream(bytes), ByteOrder.BIG_ENDIAN);
 	}
@@ -175,6 +211,13 @@ public class ByteInputStream extends FilterInputStream implements DataInput {
 		return skipBytes((int) n);
 	}
 
+	/**
+	 * Skips bytes to align the read position to the specified boundary.
+	 *
+	 * @param alignment the alignment boundary in bytes
+	 * @return the new byte count after alignment
+	 * @throws IOException if an I/O error occurs
+	 */
 	public int alignTo(int alignment) throws IOException {
 		int target = count % alignment;
 		if (target != 0) {
@@ -183,6 +226,13 @@ public class ByteInputStream extends FilterInputStream implements DataInput {
 		return count;
 	}
 
+	/**
+	 * Reads a null-terminated string using the specified charset.
+	 *
+	 * @param utf8 the charset to decode the string
+	 * @return the decoded string, not including the null terminator
+	 * @throws IOException if an I/O error occurs
+	 */
 	public String readNullTerminatedString(Charset utf8) throws IOException {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
@@ -197,6 +247,13 @@ public class ByteInputStream extends FilterInputStream implements DataInput {
 		return buffer.toString(utf8.name());
 	}
 
+	/**
+	 * Reads a length-prefixed string where the first byte indicates the string length.
+	 *
+	 * @param charset the charset to decode the string
+	 * @return the decoded string
+	 * @throws IOException if an I/O error occurs
+	 */
 	public String readByteLengthString(Charset charset) throws IOException {
 		int length = readUnsignedByte();
 		byte[] data = new byte[length];
@@ -204,12 +261,24 @@ public class ByteInputStream extends FilterInputStream implements DataInput {
 		return new String(data, charset);
 	}
 
+	/**
+	 * Creates a new ByteInputStream containing the next specified number of bytes.
+	 *
+	 * @param length the number of bytes to read into the slice
+	 * @return a new ByteInputStream with the same byte order
+	 * @throws IOException if an I/O error occurs
+	 */
 	public ByteInputStream slice(int length) throws IOException {
 		byte[] data = new byte[length];
 		readFully(data);
 		return new ByteInputStream(new ByteArrayInputStream(data), byteBuffer.order());
 	}
 
+	/**
+	 * Gets the total number of bytes read from this stream.
+	 *
+	 * @return the byte count
+	 */
 	public int getCount() {
 		return count;
 	}

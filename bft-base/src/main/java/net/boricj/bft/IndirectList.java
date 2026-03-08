@@ -25,7 +25,20 @@ import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
+/**
+ * A list interface that delegates operations to an internal list.
+ * <p>
+ * Implementations provide the backing list via {@link #getElements()} and inherit
+ * default delegate implementations for all list operations.
+ *
+ * @param <T> the element type
+ */
 public interface IndirectList<T> extends List<T> {
+	/**
+	 * Returns the internal list that holds the elements.
+	 *
+	 * @return the backing list
+	 */
 	abstract List<T> getElements();
 
 	@Override

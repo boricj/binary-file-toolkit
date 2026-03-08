@@ -26,7 +26,21 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+/**
+ * A navigable map interface that delegates operations to an internal map.
+ * <p>
+ * Implementations provide the backing map via {@link #getElements()} and inherit
+ * default delegate implementations for all map operations.
+ *
+ * @param <K> the key type
+ * @param <V> the value type
+ */
 public interface IndirectNavigableMap<K, V> extends NavigableMap<K, V> {
+	/**
+	 * Returns the internal navigable map that holds the entries.
+	 *
+	 * @return the backing navigable map
+	 */
 	public NavigableMap<K, V> getElements();
 
 	@Override

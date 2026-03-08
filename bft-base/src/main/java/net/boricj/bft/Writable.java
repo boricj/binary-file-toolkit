@@ -20,17 +20,49 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/** Interface for objects that can be written to an output stream at a specific offset. */
 public interface Writable {
+	/**
+	 * Returns the file offset where this object should be written.
+	 *
+	 * @return the file offset in bytes
+	 */
 	public long getOffset();
 
+	/**
+	 * Returns the length in bytes of this object's serialized form.
+	 *
+	 * @return the serialized length in bytes
+	 */
 	public long getLength();
 
+	/**
+	 * Writes this object to the given output stream.
+	 *
+	 * @param outputStream the stream to write to
+	 * @throws IOException if writing fails
+	 */
 	public void write(OutputStream outputStream) throws IOException;
 
+	/**
+	 * Writes a collection of writables to an output stream, filling gaps with zero bytes.
+	 *
+	 * @param writables collection of objects to write
+	 * @param outputStream stream to write to
+	 * @throws IOException if writing fails
+	 */
 	public static void write(Collection<Writable> writables, OutputStream outputStream) throws IOException {
 		write(writables, outputStream, 0x00);
 	}
 
+	/**
+	 * Writes a collection of writables to an output stream, filling gaps with a specified padding byte.
+	 *
+	 * @param writables collection of objects to write
+	 * @param outputStream stream to write to
+	 * @param padding byte value to use for padding between objects
+	 * @throws IOException if writing fails
+	 */
 	public static void write(Collection<Writable> writables, OutputStream outputStream, int padding)
 			throws IOException {
 		List<Writable> sortedWritables = writables.stream()

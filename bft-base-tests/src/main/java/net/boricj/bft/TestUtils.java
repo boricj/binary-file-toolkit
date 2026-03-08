@@ -26,11 +26,37 @@ import java.util.function.Function;
 
 import org.junit.jupiter.api.AssertionFailureBuilder;
 
+/**
+ * Utility methods for testing binary file serialization and deserialization.
+ *
+ * <p>This class provides helper methods for comparing serialized output against expected binary data,
+ * with support for applying patches and detailed error reporting on mismatches.
+ */
 public class TestUtils {
+	private TestUtils() {
+		// Utility class, no instances allowed
+	}
+
+	/**
+	 * Compares serialized output from a collection of writables against expected binary data.
+	 *
+	 * @param expected the expected binary data as an input stream
+	 * @param writables the collection of writable objects to serialize
+	 * @throws IOException if an I/O error occurs during serialization or comparison
+	 */
 	public static void compare(InputStream expected, Collection<Writable> writables) throws IOException {
 		compare(expected, writables, Collections.emptyMap());
 	}
 
+	/**
+	 * Compares serialized output from a collection of writables against expected binary data,
+	 * with support for applying patches to the actual output before comparison.
+	 *
+	 * @param expected the expected binary data as an input stream
+	 * @param writables the collection of writable objects to serialize
+	 * @param patches a map of byte offsets to byte arrays to patch into the actual output before comparison
+	 * @throws IOException if an I/O error occurs during serialization or comparison
+	 */
 	public static void compare(InputStream expected, Collection<Writable> writables, Map<Integer, byte[]> patches)
 			throws IOException {
 		File outputFile = File.createTempFile("output", ".bin");
@@ -51,6 +77,13 @@ public class TestUtils {
 		assertArrayEquals(expectedBytes, actualBytes);
 	}
 
+	/**
+	 * Asserts that two byte arrays are equal. If they differ, throws an assertion failure with
+	 * detailed context showing the first difference location and surrounding bytes.
+	 *
+	 * @param expected the expected byte array
+	 * @param actual the actual byte array
+	 */
 	public static void assertArrayEquals(byte[] expected, byte[] actual) {
 		// Find first difference for debugging.
 		int firstDiff = -1;
@@ -111,6 +144,17 @@ public class TestUtils {
 		}
 	}
 
+	/**
+	 * Finds an item in an indirect list collection by comparing a property value.
+	 *
+	 * @param <Col> the collection type extending IndirectList
+	 * @param <Value> the type of the property value to search for
+	 * @param <Item> the type of items in the collection
+	 * @param collection the collection to search
+	 * @param nameGetter a function that extracts the property value from an item
+	 * @param value the property value to search for
+	 * @return the first matching item, or null if not found
+	 */
 	public static <Col extends IndirectList<Item>, Value, Item> Item findBy(
 			Col collection, Function<? super Item, String> nameGetter, Value value) {
 		for (Item item : collection.getElements()) {

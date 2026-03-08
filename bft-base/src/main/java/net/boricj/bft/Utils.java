@@ -13,9 +13,19 @@
  */
 package net.boricj.bft;
 
+/**
+ * Utility methods for binary file processing.
+ */
 public class Utils {
 	private Utils() {}
 
+	/**
+	 * Rounds up an int value to the next multiple of the alignment.
+	 *
+	 * @param value the value to round
+	 * @param alignment the alignment boundary
+	 * @return the rounded value
+	 */
 	public static int roundUp(int value, int alignment) {
 		if (alignment > 0) {
 			value = ((value + alignment - 1) / alignment) * alignment;
@@ -24,6 +34,13 @@ public class Utils {
 		return value;
 	}
 
+	/**
+	 * Rounds up a long value to the next multiple of the alignment.
+	 *
+	 * @param value the value to round
+	 * @param alignment the alignment boundary
+	 * @return the rounded value
+	 */
 	public static long roundUp(long value, long alignment) {
 		if (alignment > 0) {
 			value = ((value + alignment - 1) / alignment) * alignment;

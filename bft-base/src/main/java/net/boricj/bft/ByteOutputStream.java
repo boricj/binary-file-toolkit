@@ -21,21 +21,45 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 
+/**
+ * Output stream with support for little/big-endian multi-byte writes and position tracking.
+ * <p>
+ * Wraps an {@link OutputStream} and provides {@link DataOutput} operations with configurable
+ * byte order and automatic byte counting.
+ */
 public class ByteOutputStream extends FilterOutputStream implements DataOutput {
 	private final byte[] bytes = new byte[8];
 	private final ByteBuffer byteBuffer;
 	private int count = 0;
 
+	/**
+	 * Creates a byte output stream with the specified byte order.
+	 *
+	 * @param outputStream the underlying output stream
+	 * @param byteOrder the byte order for multi-byte writes
+	 */
 	public ByteOutputStream(OutputStream outputStream, ByteOrder byteOrder) {
 		super(outputStream);
 		this.byteBuffer = ByteBuffer.wrap(bytes);
 		this.byteBuffer.order(byteOrder);
 	}
 
+	/**
+	 * Creates a little-endian byte output stream.
+	 *
+	 * @param outputStream the underlying output stream
+	 * @return a little-endian ByteOutputStream
+	 */
 	public static ByteOutputStream asLittleEndian(OutputStream outputStream) {
 		return new ByteOutputStream(outputStream, ByteOrder.LITTLE_ENDIAN);
 	}
 
+	/**
+	 * Creates a big-endian byte output stream.
+	 *
+	 * @param outputStream the underlying output stream
+	 * @return a big-endian ByteOutputStream
+	 */
 	public static ByteOutputStream asBigEndian(OutputStream outputStream) {
 		return new ByteOutputStream(outputStream, ByteOrder.BIG_ENDIAN);
 	}
@@ -107,11 +131,26 @@ public class ByteOutputStream extends FilterOutputStream implements DataOutput {
 		throw new UnsupportedOperationException("Unimplemented method 'writeUTF'");
 	}
 
+	/**
+	 * Writes a null-terminated string using the specified charset.
+	 *
+	 * @param name the string to write
+	 * @param charset the charset to encode the string
+	 * @throws IOException if an I/O error occurs
+	 */
 	public void writeNullTerminatedString(String name, Charset charset) throws IOException {
 		write(name.getBytes(charset));
 		writeByte(0);
 	}
 
+	/**
+	 * Writes a length-prefixed string where the first byte indicates the string length.
+	 *
+	 * @param value the string to write (max 255 bytes when encoded)
+	 * @param charset the charset to encode the string
+	 * @throws IOException if an I/O error occurs
+	 * @throws IllegalArgumentException if the encoded string exceeds 255 bytes
+	 */
 	public void writeByteLengthString(String value, Charset charset) throws IOException {
 		byte[] bytes = value.getBytes(charset);
 		if (bytes.length > 0xFF) {
@@ -121,6 +160,12 @@ public class ByteOutputStream extends FilterOutputStream implements DataOutput {
 		write(bytes);
 	}
 
+	/**
+	 * Writes zero bytes to align the write position to the specified boundary.
+	 *
+	 * @param i the alignment boundary in bytes
+	 * @throws IOException if an I/O error occurs
+	 */
 	public void alignTo(int i) throws IOException {
 		if (count % i != 0) {
 			int padding = i - (count % i);
@@ -128,6 +173,11 @@ public class ByteOutputStream extends FilterOutputStream implements DataOutput {
 		}
 	}
 
+	/**
+	 * Gets the total number of bytes written to this stream.
+	 *
+	 * @return the byte count
+	 */
 	public int getCount() {
 		return count;
 	}
