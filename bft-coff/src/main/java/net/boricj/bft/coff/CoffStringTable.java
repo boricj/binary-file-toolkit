@@ -46,12 +46,12 @@ public class CoffStringTable implements Iterable<Integer>, Writable {
 
 	protected CoffStringTable(CoffFile coff, CoffFile.Builder builder) {
 		this.coff = coff;
-		this.charset = builder.getStringTableCharset();
+		this.charset = builder.getCharset();
 	}
 
 	protected CoffStringTable(CoffFile coff, CoffFile.Parser parser) throws IOException {
 		this.coff = coff;
-		this.charset = parser.charset;
+		this.charset = parser.getCharset();
 
 		FileInputStream fis = parser.getFileInputStream();
 		fis.getChannel().position(getOffset(parser));

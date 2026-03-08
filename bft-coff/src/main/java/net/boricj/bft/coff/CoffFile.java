@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 import net.boricj.bft.ByteInputStream;
@@ -35,7 +34,7 @@ public class CoffFile {
 		private final CoffMachine machine;
 		private int timeDateStamp;
 		private short characteristics;
-		private Charset stringTableCharset = CoffStringTable.DEFAULT_CHARSET;
+		private Charset charset = CoffStringTable.DEFAULT_CHARSET;
 
 		public Builder(CoffMachine machine) {
 			Objects.requireNonNull(machine);
@@ -67,14 +66,15 @@ public class CoffFile {
 			return this;
 		}
 
-		public Charset getStringTableCharset() {
-			return stringTableCharset;
+		public Charset getCharset() {
+			return charset;
 		}
 
-		public void setStringTableCharset(Charset stringTableCharset) {
-			Objects.requireNonNull(stringTableCharset);
+		public Builder setCharset(Charset charset) {
+			Objects.requireNonNull(charset);
 
-			this.stringTableCharset = stringTableCharset;
+			this.charset = charset;
+			return this;
 		}
 
 		public CoffFile build() {
@@ -84,11 +84,11 @@ public class CoffFile {
 
 	public static class Parser {
 		private final FileInputStream fis;
-		public Charset charset = StandardCharsets.UTF_8;
+		private Charset charset = CoffStringTable.DEFAULT_CHARSET;
 
-		public short numberOfSections;
-		public int pointerToSymbolTable;
-		public int numberOfSymbols;
+		short numberOfSections;
+		int pointerToSymbolTable;
+		int numberOfSymbols;
 
 		public Parser(FileInputStream fis) {
 			Objects.requireNonNull(fis);
@@ -98,6 +98,17 @@ public class CoffFile {
 
 		public FileInputStream getFileInputStream() {
 			return fis;
+		}
+
+		public Charset getCharset() {
+			return charset;
+		}
+
+		public Parser setCharset(Charset charset) {
+			Objects.requireNonNull(charset);
+
+			this.charset = charset;
+			return this;
 		}
 
 		public CoffFile parse() throws IOException {
