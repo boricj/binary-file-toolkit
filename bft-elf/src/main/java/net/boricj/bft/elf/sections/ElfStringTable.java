@@ -76,7 +76,7 @@ public class ElfStringTable extends ElfSection implements Iterable<Integer> {
 			long addralign,
 			long entsize)
 			throws IOException {
-		this(elf, "", flags, addr, offset, addralign, entsize, parser.stringTableCharset);
+		this(elf, "", flags, addr, offset, addralign, entsize, parser.getCharset());
 
 		FileInputStream fis = parser.getFileInputStream();
 		fis.getChannel().position(offset);

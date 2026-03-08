@@ -132,30 +132,32 @@ public class ElfFile {
 
 	public static class Parser {
 		private final FileInputStream fis;
-		public Charset stringTableCharset;
-		public boolean ignoreSectionErrors;
+		private Charset charset = ElfStringTable.DEFAULT_CHARSET;
+		boolean ignoreSectionErrors = false;
 
-		public final List<Integer> sh_names = new ArrayList<>();
-		public short e_phnum;
-		public short e_shnum;
-		public short e_shstrndx;
+		final List<Integer> sh_names = new ArrayList<>();
+		short e_phnum;
+		short e_shnum;
+		short e_shstrndx;
 
 		public Parser(FileInputStream fis) {
 			Objects.requireNonNull(fis);
 
 			this.fis = fis;
-			this.stringTableCharset = ElfStringTable.DEFAULT_CHARSET;
-			this.ignoreSectionErrors = false;
 		}
 
 		public FileInputStream getFileInputStream() {
 			return fis;
 		}
 
-		public Parser setStringTableCharset(Charset charset) {
+		public Charset getCharset() {
+			return charset;
+		}
+
+		public Parser setCharset(Charset charset) {
 			Objects.requireNonNull(charset);
 
-			stringTableCharset = charset;
+			this.charset = charset;
 			return this;
 		}
 
