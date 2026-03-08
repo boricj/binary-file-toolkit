@@ -77,6 +77,9 @@ public class CoffRelocationTable implements IndirectList<CoffRel>, Writable {
 	private int pointerToRelocations;
 
 	public CoffRelocationTable(CoffFile coff, CoffSection section) {
+		Objects.requireNonNull(coff);
+		Objects.requireNonNull(section);
+
 		this.coff = coff;
 		this.section = section;
 	}

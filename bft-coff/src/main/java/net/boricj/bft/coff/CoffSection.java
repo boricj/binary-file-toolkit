@@ -35,6 +35,8 @@ public abstract class CoffSection implements Writable {
 			int pointerToRawData,
 			CoffSectionFlags characteristics) {
 		Objects.requireNonNull(coff);
+		Objects.requireNonNull(name);
+		Objects.requireNonNull(characteristics);
 
 		this.coff = coff;
 		this.name = name;

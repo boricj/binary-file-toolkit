@@ -29,6 +29,7 @@ import java.util.Comparator;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import net.boricj.bft.ByteInputStream;
 import net.boricj.bft.ByteOutputStream;
@@ -54,6 +55,9 @@ public class CoffSymbolTable implements IndirectList<CoffSymbol>, Writable {
 		private final CoffStorageClass storageClass;
 
 		public CoffSymbol(String name, int value, short sectionNumber, short type, CoffStorageClass storageClass) {
+			Objects.requireNonNull(name);
+			Objects.requireNonNull(storageClass);
+
 			this.name = name;
 			this.value = value;
 			this.sectionNumber = sectionNumber;
@@ -347,6 +351,7 @@ public class CoffSymbolTable implements IndirectList<CoffSymbol>, Writable {
 				throw new RuntimeException(ex);
 			}
 
+			Objects.requireNonNull(symbol);
 			idx = add(symbol, this);
 			idx += symbol.getNumberOfAuxSymbols();
 		}

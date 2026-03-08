@@ -16,6 +16,7 @@ package net.boricj.bft.coff.sections;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Objects;
 
 import net.boricj.bft.coff.CoffFile;
 import net.boricj.bft.coff.CoffRelocationTable;
@@ -27,6 +28,7 @@ public class CoffBytes extends CoffSection {
 
 	public CoffBytes(CoffFile coff, String name, CoffSectionFlags characteristics, byte[] bytes) {
 		super(coff, name, 0, 0, 0, characteristics);
+		Objects.requireNonNull(bytes);
 
 		this.relocationTable = new CoffRelocationTable(coff, this);
 		this.bytes = bytes;
