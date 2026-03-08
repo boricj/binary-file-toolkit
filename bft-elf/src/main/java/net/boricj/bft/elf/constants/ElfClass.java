@@ -13,9 +13,15 @@
  */
 package net.boricj.bft.elf.constants;
 
+/**
+ * ELF class indicating the bit width of the file.
+ */
 public enum ElfClass {
+	/** Invalid class. */
 	ELFCLASSNONE((byte) 0),
+	/** 32-bit file. */
 	ELFCLASS32((byte) 1),
+	/** 64-bit file. */
 	ELFCLASS64((byte) 2),
 	;
 
@@ -25,10 +31,22 @@ public enum ElfClass {
 		this.value = value;
 	}
 
+	/**
+	 * Returns the byte value of this ELF class.
+	 *
+	 * @return the byte value
+	 */
 	public byte getValue() {
 		return value;
 	}
 
+	/**
+	 * Returns the ELF class constant for the given byte value.
+	 *
+	 * @param value the byte value to look up
+	 * @return the matching ELF class
+	 * @throws IllegalArgumentException if the value is invalid
+	 */
 	public static ElfClass valueFrom(byte value) {
 		for (ElfClass class_ : values()) {
 			if (class_.getValue() == value) {

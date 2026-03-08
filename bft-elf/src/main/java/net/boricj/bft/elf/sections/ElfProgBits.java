@@ -23,17 +23,52 @@ import net.boricj.bft.elf.ElfSection;
 import net.boricj.bft.elf.ElfSectionFlags;
 import net.boricj.bft.elf.constants.ElfSectionType;
 
+/**
+ * ELF section containing raw byte data (SHT_PROGBITS).
+ * Represents sections with initialized data such as code (.text) or data (.data) segments.
+ */
 public class ElfProgBits extends ElfSection {
 	private final byte[] bytes;
 
+	/**
+	 * Creates a PROGBITS section with the specified properties.
+	 *
+	 * @param elf the parent ELF file
+	 * @param name the section name
+	 * @param flags the section flags
+	 * @param addralign the address alignment
+	 * @param bytes the section content
+	 */
 	public ElfProgBits(ElfFile elf, String name, ElfSectionFlags flags, long addralign, byte[] bytes) {
 		this(elf, name, flags, 0, 0, addralign, 0, bytes);
 	}
 
+	/**
+	 * Creates a PROGBITS section with the specified properties and entry size.
+	 *
+	 * @param elf the parent ELF file
+	 * @param name the section name
+	 * @param flags the section flags
+	 * @param addralign the address alignment
+	 * @param entsize the entry size for fixed-size elements
+	 * @param bytes the section content
+	 */
 	public ElfProgBits(ElfFile elf, String name, ElfSectionFlags flags, long addralign, long entsize, byte[] bytes) {
 		this(elf, name, flags, 0, 0, addralign, entsize, bytes);
 	}
 
+	/**
+	 * Creates a PROGBITS section with complete properties for file layout.
+	 *
+	 * @param elf the parent ELF file
+	 * @param name the section name
+	 * @param flags the section flags
+	 * @param addr the virtual address
+	 * @param offset the file offset
+	 * @param addralign the address alignment
+	 * @param entsize the entry size for fixed-size elements
+	 * @param bytes the section content
+	 */
 	public ElfProgBits(
 			ElfFile elf,
 			String name,
@@ -49,6 +84,21 @@ public class ElfProgBits extends ElfSection {
 		this.bytes = bytes;
 	}
 
+	/**
+	 * Parses a PROGBITS section from an ELF file.
+	 *
+	 * @param elf the parent ELF file
+	 * @param parser the ELF parser
+	 * @param flags the section flags
+	 * @param addr the virtual address
+	 * @param offset the file offset
+	 * @param size the section size
+	 * @param link the link index
+	 * @param info additional information
+	 * @param addralign the address alignment
+	 * @param entsize the entry size for fixed-size elements
+	 * @throws IOException if parsing fails
+	 */
 	public ElfProgBits(
 			ElfFile elf,
 			ElfFile.Parser parser,
@@ -71,6 +121,11 @@ public class ElfProgBits extends ElfSection {
 		fis.readNBytes(bytes, 0, (int) size);
 	}
 
+	/**
+	 * Returns the raw byte content of this section.
+	 *
+	 * @return the section bytes
+	 */
 	public byte[] getBytes() {
 		return bytes;
 	}

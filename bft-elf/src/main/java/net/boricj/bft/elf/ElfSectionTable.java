@@ -39,15 +39,31 @@ import net.boricj.bft.elf.sections.ElfStringTable;
 
 import static net.boricj.bft.elf.ElfSection.SHN_LORESERVE;
 
+/**
+ * ELF section table containing all sections in the file.
+ * Sections represent code, data, symbols, relocations, and other segments.
+ */
 public class ElfSectionTable implements IndirectList<ElfSection>, Writable {
 	private final ElfFile elf;
 	private final List<ElfSection> table = new ArrayList<>();
 	private final Map<ElfSection, Integer> reverseLookup = new IdentityHashMap<>();
 
+	/**
+	 * Creates an empty section table.
+	 *
+	 * @param elf parent ELF file
+	 */
 	protected ElfSectionTable(ElfFile elf) {
 		this.elf = elf;
 	}
 
+	/**
+	 * Reads a section table from an ELF file.
+	 *
+	 * @param elf parent ELF file
+	 * @param parser ELF file parser
+	 * @throws IOException if an I/O error occurs
+	 */
 	public ElfSectionTable(ElfFile elf, ElfFile.Parser parser) throws IOException {
 		this.elf = elf;
 		this.table.addAll(
@@ -122,6 +138,14 @@ public class ElfSectionTable implements IndirectList<ElfSection>, Writable {
 		}
 	}
 
+	/**
+	 * Gets a section by index, parsing it from the file if not already loaded.
+	 *
+	 * @param index section index
+	 * @param parser ELF file parser
+	 * @return the section at the given index
+	 * @throws IOException if an I/O error occurs
+	 */
 	public ElfSection get(int index, ElfFile.Parser parser) throws IOException {
 		ElfSection section = get(index);
 
@@ -268,6 +292,11 @@ public class ElfSectionTable implements IndirectList<ElfSection>, Writable {
 
 		reverseLookup.put(section, size());
 		return table.add(section);
+	}
+
+	@Override
+	public ElfSection get(int index) {
+		return table.get(index);
 	}
 
 	@Override

@@ -46,7 +46,15 @@ import static net.boricj.bft.elf.constants.ElfSymbolType.STT_NOTYPE;
 import static net.boricj.bft.elf.constants.ElfSymbolType.STT_SECTION;
 import static net.boricj.bft.elf.constants.ElfSymbolVisibility.STV_DEFAULT;
 
+/**
+ * ELF symbol table section containing symbol entries.
+ * Symbols represent functions, variables, sections, and other named entities.
+ */
 public class ElfSymbolTable extends ElfSection implements IndirectList<ElfSymbol> {
+	/**
+	 * An ELF symbol table entry.
+	 * Represents a named entity with type, binding, visibility, and value information.
+	 */
 	public class ElfSymbol implements Comparable<ElfSymbol> {
 		private final String name;
 		private final long st_value;
@@ -56,6 +64,17 @@ public class ElfSymbolTable extends ElfSection implements IndirectList<ElfSymbol
 		private final ElfSymbolBinding binding;
 		private final short st_shndx;
 
+		/**
+		 * Creates a new symbol entry.
+		 *
+		 * @param name symbol name
+		 * @param st_value symbol value (address or offset)
+		 * @param st_size symbol size in bytes
+		 * @param type symbol type
+		 * @param visibility symbol visibility
+		 * @param binding symbol binding
+		 * @param st_shndx section index
+		 */
 		protected ElfSymbol(
 				String name,
 				long st_value,
@@ -78,6 +97,13 @@ public class ElfSymbolTable extends ElfSection implements IndirectList<ElfSymbol
 			this.st_shndx = st_shndx;
 		}
 
+		/**
+		 * Writes this symbol entry to output.
+		 *
+		 * @param dataOutput data output to write to
+		 * @param ident_class ELF class (32-bit or 64-bit)
+		 * @throws IOException if an I/O error occurs
+		 */
 		protected void write(DataOutput dataOutput, ElfClass ident_class) throws IOException {
 			int st_name = stringTable.find(name);
 			byte info = (byte) (type.getValue() | (binding.getValue() << 4));
@@ -107,34 +133,74 @@ public class ElfSymbolTable extends ElfSection implements IndirectList<ElfSymbol
 			}
 		}
 
+		/**
+		 * Returns the symbol name.
+		 *
+		 * @return the symbol name
+		 */
 		public String getName() {
 			return name;
 		}
 
+		/**
+		 * Returns the symbol value (address or offset).
+		 *
+		 * @return the symbol value
+		 */
 		public long getValue() {
 			return st_value;
 		}
 
+		/**
+		 * Returns the symbol size in bytes.
+		 *
+		 * @return the symbol size
+		 */
 		public long getSize() {
 			return st_size;
 		}
 
+		/**
+		 * Returns the symbol type.
+		 *
+		 * @return the symbol type
+		 */
 		public ElfSymbolType getType() {
 			return type;
 		}
 
+		/**
+		 * Returns the symbol visibility.
+		 *
+		 * @return the symbol visibility
+		 */
 		public ElfSymbolVisibility getVisibility() {
 			return visibility;
 		}
 
+		/**
+		 * Returns the symbol binding.
+		 *
+		 * @return the symbol binding
+		 */
 		public ElfSymbolBinding getBinding() {
 			return binding;
 		}
 
+		/**
+		 * Returns the section index.
+		 *
+		 * @return the section index
+		 */
 		public short getIndex() {
 			return st_shndx;
 		}
 
+		/**
+		 * Checks if this is a null symbol (undefined symbol at index 0).
+		 *
+		 * @return true if this is a null symbol
+		 */
 		public boolean isNull() {
 			return name == "" && st_value == 0 && st_size == 0 && type == STT_NOTYPE && binding == STB_LOCAL;
 		}
@@ -190,10 +256,29 @@ public class ElfSymbolTable extends ElfSection implements IndirectList<ElfSymbol
 	private final Map<ElfSymbol, Integer> reverseLookup = new IdentityHashMap<>();
 	private final ElfStringTable stringTable;
 
+	/**
+	 * Creates a new symbol table with default settings.
+	 *
+	 * @param elf parent ELF file
+	 * @param name section name
+	 * @param stringTable string table for symbol names
+	 */
 	public ElfSymbolTable(ElfFile elf, String name, ElfStringTable stringTable) {
 		this(elf, name, new ElfSectionFlags(), 0, 0, computeAddrAlign(elf), computeEntSize(elf), stringTable);
 	}
 
+	/**
+	 * Creates a new symbol table with specified settings.
+	 *
+	 * @param elf parent ELF file
+	 * @param name section name
+	 * @param flags section flags
+	 * @param addr section virtual address
+	 * @param offset section file offset
+	 * @param addralign section alignment
+	 * @param entsize entry size
+	 * @param stringTable string table for symbol names
+	 */
 	public ElfSymbolTable(
 			ElfFile elf,
 			String name,
@@ -214,6 +299,21 @@ public class ElfSymbolTable extends ElfSection implements IndirectList<ElfSymbol
 		this.stringTable = stringTable;
 	}
 
+	/**
+	 * Reads a symbol table from an ELF file.
+	 *
+	 * @param elf parent ELF file
+	 * @param parser ELF file parser
+	 * @param flags section flags
+	 * @param addr section virtual address
+	 * @param offset section file offset
+	 * @param size section size in bytes
+	 * @param link index of associated string table
+	 * @param info index of first non-local symbol
+	 * @param addralign section alignment
+	 * @param entsize entry size
+	 * @throws IOException if an I/O error occurs
+	 */
 	public ElfSymbolTable(
 			ElfFile elf,
 			ElfFile.Parser parser,
@@ -321,27 +421,73 @@ public class ElfSymbolTable extends ElfSection implements IndirectList<ElfSymbol
 		return info;
 	}
 
+	/**
+	 * Adds a null symbol (undefined symbol at index 0).
+	 *
+	 * @return the created null symbol
+	 */
 	public ElfSymbol addNull() {
 		return add("", 0, 0, STT_NOTYPE, STV_DEFAULT, STB_LOCAL, (short) SHN_UNDEF);
 	}
 
+	/**
+	 * Adds a file symbol (source file name).
+	 *
+	 * @param value file name
+	 * @return the created file symbol
+	 */
 	public ElfSymbol addFile(String value) {
 		return add(value, 0, 0, STT_FILE, STV_DEFAULT, STB_LOCAL, (short) SHN_ABS);
 	}
 
+	/**
+	 * Adds a section symbol.
+	 *
+	 * @param section section to reference
+	 * @return the created section symbol
+	 */
 	public ElfSymbol addSection(ElfSection section) {
 		return add("", 0, 0, STT_SECTION, STV_DEFAULT, STB_LOCAL, section);
 	}
 
+	/**
+	 * Adds a defined symbol.
+	 *
+	 * @param name symbol name
+	 * @param offset offset within the section
+	 * @param size symbol size
+	 * @param type symbol type
+	 * @param binding symbol binding
+	 * @param section section containing the symbol
+	 * @return the created symbol
+	 */
 	public ElfSymbol addDefined(
 			String name, long offset, long size, ElfSymbolType type, ElfSymbolBinding binding, ElfSection section) {
 		return add(name, offset, size, type, STV_DEFAULT, binding, section);
 	}
 
+	/**
+	 * Adds an undefined symbol.
+	 *
+	 * @param name symbol name
+	 * @return the created undefined symbol
+	 */
 	public ElfSymbol addUndefined(String name) {
 		return add(name, 0, 0, STT_NOTYPE, STV_DEFAULT, STB_GLOBAL, (short) SHN_UNDEF);
 	}
 
+	/**
+	 * Adds a symbol with a section reference.
+	 *
+	 * @param st_name symbol name
+	 * @param st_value symbol value
+	 * @param st_size symbol size
+	 * @param type symbol type
+	 * @param visibility symbol visibility
+	 * @param binding symbol binding
+	 * @param st_sh section containing the symbol
+	 * @return the created symbol
+	 */
 	public ElfSymbol add(
 			String st_name,
 			long st_value,
@@ -354,6 +500,18 @@ public class ElfSymbolTable extends ElfSection implements IndirectList<ElfSymbol
 		return add(st_name, st_value, st_size, type, visibility, binding, st_shndx);
 	}
 
+	/**
+	 * Adds a symbol with a section index.
+	 *
+	 * @param st_name symbol name
+	 * @param st_value symbol value
+	 * @param st_size symbol size
+	 * @param type symbol type
+	 * @param visibility symbol visibility
+	 * @param binding symbol binding
+	 * @param st_shndx section index
+	 * @return the created symbol
+	 */
 	public ElfSymbol add(
 			String st_name,
 			long st_value,

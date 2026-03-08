@@ -13,17 +13,32 @@
  */
 package net.boricj.bft.elf.constants;
 
+/**
+ * Standard ELF section names.
+ * These constants define commonly used section names in ELF files.
+ */
 public class ElfSectionNames {
+	/** Uninitialized data section. */
 	public static final String _BSS = ".bss";
+	/** Relocation section without addends. */
 	public static final String _REL = ".rel";
+	/** Relocation section with addends. */
 	public static final String _RELA = ".rela";
+	/** Comment section. */
 	public static final String _COMMENT = ".comment";
+	/** Initialized data section. */
 	public static final String _DATA = ".data";
+	/** GNU stack note section. */
 	public static final String _NOTE_GNU_STACK = ".note.GNU-stack";
+	/** Read-only data section. */
 	public static final String _RODATA = ".rodata";
+	/** Section header string table. */
 	public static final String _SHSTRTAB = ".shstrtab";
+	/** String table. */
 	public static final String _STRTAB = ".strtab";
+	/** Symbol table. */
 	public static final String _SYMTAB = ".symtab";
+	/** Executable code section. */
 	public static final String _TEXT = ".text";
 
 	private ElfSectionNames() {

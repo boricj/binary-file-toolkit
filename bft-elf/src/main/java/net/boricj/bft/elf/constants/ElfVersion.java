@@ -13,8 +13,13 @@
  */
 package net.boricj.bft.elf.constants;
 
+/**
+ * ELF version field indicating the ELF format version.
+ */
 public enum ElfVersion {
+	/** Invalid version. */
 	EV_NONE((byte) 0),
+	/** Current ELF format version. */
 	EV_CURRENT((byte) 1),
 	;
 
@@ -24,10 +29,22 @@ public enum ElfVersion {
 		this.value = value;
 	}
 
+	/**
+	 * Returns the byte value of this version.
+	 *
+	 * @return the byte value
+	 */
 	public byte getValue() {
 		return value;
 	}
 
+	/**
+	 * Returns the version constant for the given byte value.
+	 *
+	 * @param value the byte value to look up
+	 * @return the matching version
+	 * @throws IllegalArgumentException if the value is invalid
+	 */
 	public static ElfVersion valueFrom(byte value) {
 		for (ElfVersion version : values()) {
 			if (version.getValue() == value) {

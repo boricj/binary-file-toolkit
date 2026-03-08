@@ -36,12 +36,27 @@ import net.boricj.bft.elf.constants.ElfSectionType;
 import net.boricj.bft.elf.sections.ElfRelTable.ElfRel;
 import net.boricj.bft.elf.sections.ElfSymbolTable.ElfSymbol;
 
+/**
+ * ELF relocation table section without explicit addends (REL format).
+ * Relocations specify how to adjust addresses during linking.
+ */
 public class ElfRelTable extends ElfSection implements IndirectList<ElfRel> {
+	/**
+	 * An ELF relocation entry without explicit addend.
+	 * The addend is stored in the location to be modified.
+	 */
 	public class ElfRel {
 		private final long r_offset;
 		private final ElfSymbol symbol;
 		private final ElfRelocationType type;
 
+		/**
+		 * Creates a new relocation entry.
+		 *
+		 * @param r_offset offset where relocation should be applied
+		 * @param symbol symbol referenced by this relocation
+		 * @param type relocation type
+		 */
 		protected ElfRel(long r_offset, ElfSymbol symbol, ElfRelocationType type) {
 			Objects.requireNonNull(symbol);
 			Objects.requireNonNull(type);
@@ -55,6 +70,14 @@ public class ElfRelTable extends ElfSection implements IndirectList<ElfRel> {
 			this.type = type;
 		}
 
+		/**
+		 * Reads a relocation entry from input.
+		 *
+		 * @param dataInput data input to read from
+		 * @param ident_class ELF class (32-bit or 64-bit)
+		 * @param machine ELF machine type
+		 * @throws IOException if an I/O error occurs
+		 */
 		protected ElfRel(DataInput dataInput, ElfClass ident_class, ElfMachine machine) throws IOException {
 			long r_info;
 			int symidx;
@@ -93,6 +116,13 @@ public class ElfRelTable extends ElfSection implements IndirectList<ElfRel> {
 			}
 		}
 
+		/**
+		 * Writes this relocation entry to output.
+		 *
+		 * @param dataOutput data output to write to
+		 * @param ident_class ELF class (32-bit or 64-bit)
+		 * @throws IOException if an I/O error occurs
+		 */
 		protected void write(DataOutput dataOutput, ElfClass ident_class) throws IOException {
 			long symidx = symbolTable.indexOf(symbol);
 			long typeval = type.getValue();
@@ -113,14 +143,29 @@ public class ElfRelTable extends ElfSection implements IndirectList<ElfRel> {
 			}
 		}
 
+		/**
+		 * Returns the offset where this relocation should be applied.
+		 *
+		 * @return the relocation offset
+		 */
 		public long getOffset() {
 			return r_offset;
 		}
 
+		/**
+		 * Returns the symbol referenced by this relocation.
+		 *
+		 * @return the symbol
+		 */
 		public ElfSymbol getSymbol() {
 			return symbol;
 		}
 
+		/**
+		 * Returns the relocation type.
+		 *
+		 * @return the relocation type
+		 */
 		public ElfRelocationType getType() {
 			return type;
 		}
@@ -130,6 +175,14 @@ public class ElfRelTable extends ElfSection implements IndirectList<ElfRel> {
 	private final ElfSymbolTable symbolTable;
 	private final ElfSection section;
 
+	/**
+	 * Creates a new relocation table with default settings.
+	 *
+	 * @param elf parent ELF file
+	 * @param name section name
+	 * @param symbolTable symbol table referenced by relocations
+	 * @param section section to which relocations apply
+	 */
 	public ElfRelTable(ElfFile elf, String name, ElfSymbolTable symbolTable, ElfSection section) {
 		this(
 				elf,
@@ -143,6 +196,19 @@ public class ElfRelTable extends ElfSection implements IndirectList<ElfRel> {
 				section);
 	}
 
+	/**
+	 * Creates a new relocation table with specified settings.
+	 *
+	 * @param elf parent ELF file
+	 * @param name section name
+	 * @param flags section flags
+	 * @param addr section virtual address
+	 * @param offset section file offset
+	 * @param addralign section alignment
+	 * @param entsize entry size
+	 * @param symbolTable symbol table referenced by relocations
+	 * @param section section to which relocations apply
+	 */
 	public ElfRelTable(
 			ElfFile elf,
 			String name,
@@ -169,6 +235,21 @@ public class ElfRelTable extends ElfSection implements IndirectList<ElfRel> {
 		this.section = section;
 	}
 
+	/**
+	 * Reads a relocation table from an ELF file.
+	 *
+	 * @param elf parent ELF file
+	 * @param parser ELF file parser
+	 * @param flags section flags
+	 * @param addr section virtual address
+	 * @param offset section file offset
+	 * @param size section size in bytes
+	 * @param link index of associated symbol table
+	 * @param info index of section to which relocations apply
+	 * @param addralign section alignment
+	 * @param entsize entry size
+	 * @throws IOException if an I/O error occurs
+	 */
 	public ElfRelTable(
 			ElfFile elf,
 			ElfFile.Parser parser,
@@ -221,6 +302,14 @@ public class ElfRelTable extends ElfSection implements IndirectList<ElfRel> {
 		return Collections.unmodifiableList(relocations);
 	}
 
+	/**
+	 * Adds a new relocation entry to this table.
+	 *
+	 * @param r_offset offset where relocation should be applied
+	 * @param symbol symbol referenced by this relocation
+	 * @param type relocation type
+	 * @return the created relocation entry
+	 */
 	public ElfRel add(long r_offset, ElfSymbol symbol, ElfRelocationType type) {
 		ElfRel relocation = new ElfRel(r_offset, symbol, type);
 		relocations.add(relocation);
@@ -242,10 +331,20 @@ public class ElfRelTable extends ElfSection implements IndirectList<ElfRel> {
 		return getElfFile().getSections().indexOf(section);
 	}
 
+	/**
+	 * Returns the section to which relocations in this table apply.
+	 *
+	 * @return the target section
+	 */
 	public ElfSection getSection() {
 		return section;
 	}
 
+	/**
+	 * Returns the symbol table referenced by relocations in this table.
+	 *
+	 * @return the symbol table
+	 */
 	public ElfSymbolTable getSymbolTable() {
 		return symbolTable;
 	}

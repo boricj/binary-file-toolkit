@@ -21,15 +21,47 @@ import net.boricj.bft.elf.ElfSection;
 import net.boricj.bft.elf.ElfSectionFlags;
 import net.boricj.bft.elf.constants.ElfSectionType;
 
+/**
+ * ELF null section (SHT_NULL).
+ * Represents an inactive section with no content, used as the first entry in the section table.
+ */
 public class ElfNullSection extends ElfSection {
+	/**
+	 * Creates a null section with default parameters.
+	 *
+	 * @param elf the parent ELF file
+	 */
 	public ElfNullSection(ElfFile elf) {
 		this(elf, "", new ElfSectionFlags(), 0, 0);
 	}
 
+	/**
+	 * Creates a null section with specified parameters.
+	 *
+	 * @param elf the parent ELF file
+	 * @param name section name
+	 * @param flags section flags
+	 * @param addralign address alignment
+	 * @param entsize entry size
+	 */
 	public ElfNullSection(ElfFile elf, String name, ElfSectionFlags flags, long addralign, long entsize) {
 		super(elf, name, flags, 0, 0, addralign, 0);
 	}
 
+	/**
+	 * Parses a null section from an input stream.
+	 *
+	 * @param elf the parent ELF file
+	 * @param parser parser containing input stream
+	 * @param flags section flags
+	 * @param addr virtual address
+	 * @param offset file offset
+	 * @param size section size
+	 * @param link link to another section
+	 * @param info additional section information
+	 * @param addralign address alignment
+	 * @param entsize entry size
+	 */
 	public ElfNullSection(
 			ElfFile elf,
 			ElfFile.Parser parser,

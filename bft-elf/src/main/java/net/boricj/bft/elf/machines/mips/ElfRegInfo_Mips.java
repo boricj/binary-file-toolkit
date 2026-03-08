@@ -24,25 +24,74 @@ import net.boricj.bft.elf.ElfSection;
 import net.boricj.bft.elf.ElfSectionFlags;
 import net.boricj.bft.elf.constants.ElfSectionType;
 
+/**
+ * MIPS register usage information section.
+ * Contains masks indicating which registers are used and the global pointer value.
+ */
 public class ElfRegInfo_Mips extends ElfSection {
 	private int ri_gprmask;
 	private int[] ri_cprmask = new int[4];
 	private int ri_gp_value;
 
+	/**
+	 * Creates a new MIPS register info section.
+	 *
+	 * @param elf the parent ELF file
+	 * @param name section name
+	 * @param flags section flags
+	 * @param addralign address alignment
+	 * @param bytes initial content (unused)
+	 */
 	public ElfRegInfo_Mips(ElfFile elf, String name, ElfSectionFlags flags, long addralign, byte[] bytes) {
 		this(elf, name, flags, 0, 0, addralign, 0);
 	}
 
+	/**
+	 * Creates a new MIPS register info section with entry size.
+	 *
+	 * @param elf the parent ELF file
+	 * @param name section name
+	 * @param flags section flags
+	 * @param addralign address alignment
+	 * @param entsize entry size
+	 * @param bytes initial content (unused)
+	 */
 	public ElfRegInfo_Mips(
 			ElfFile elf, String name, ElfSectionFlags flags, long addralign, long entsize, byte[] bytes) {
 		this(elf, name, flags, 0, 0, addralign, entsize);
 	}
 
+	/**
+	 * Creates a new MIPS register info section with full parameters.
+	 *
+	 * @param elf the parent ELF file
+	 * @param name section name
+	 * @param flags section flags
+	 * @param addr virtual address
+	 * @param offset file offset
+	 * @param addralign address alignment
+	 * @param entsize entry size
+	 */
 	public ElfRegInfo_Mips(
 			ElfFile elf, String name, ElfSectionFlags flags, long addr, long offset, long addralign, long entsize) {
 		super(elf, name, flags, addr, offset, addralign, entsize);
 	}
 
+	/**
+	 * Parses a MIPS register info section from an input stream.
+	 *
+	 * @param elf the parent ELF file
+	 * @param parser parser containing input stream
+	 * @param flags section flags
+	 * @param addr virtual address
+	 * @param offset file offset
+	 * @param size section size
+	 * @param link link to another section
+	 * @param info additional section information
+	 * @param addralign address alignment
+	 * @param entsize entry size
+	 * @throws IOException if reading fails
+	 */
 	public ElfRegInfo_Mips(
 			ElfFile elf,
 			ElfFile.Parser parser,
@@ -92,26 +141,58 @@ public class ElfRegInfo_Mips extends ElfSection {
 		return ElfSectionType.SHT_MIPS_REGINFO.getValue();
 	}
 
+	/**
+	 * Returns the general purpose register usage mask.
+	 *
+	 * @return GPR mask
+	 */
 	public int getGprMask() {
 		return ri_gprmask;
 	}
 
+	/**
+	 * Sets the general purpose register usage mask.
+	 *
+	 * @param ri_gprmask GPR mask value
+	 */
 	public void setGprMask(int ri_gprmask) {
 		this.ri_gprmask = ri_gprmask;
 	}
 
+	/**
+	 * Returns a coprocessor register usage mask.
+	 *
+	 * @param index coprocessor index (0-3)
+	 * @return coprocessor register mask
+	 */
 	public int getCprMask(int index) {
 		return ri_cprmask[index];
 	}
 
+	/**
+	 * Sets a coprocessor register usage mask.
+	 *
+	 * @param index coprocessor index (0-3)
+	 * @param ri_gprmask coprocessor register mask value
+	 */
 	public void setCprMask(int index, int ri_gprmask) {
 		this.ri_cprmask[index] = ri_gprmask;
 	}
 
+	/**
+	 * Returns the global pointer value.
+	 *
+	 * @return global pointer value
+	 */
 	public int getGpValue() {
 		return ri_gprmask;
 	}
 
+	/**
+	 * Sets the global pointer value.
+	 *
+	 * @param ri_gp_value global pointer value
+	 */
 	public void setGpValue(int ri_gp_value) {
 		this.ri_gp_value = ri_gp_value;
 	}

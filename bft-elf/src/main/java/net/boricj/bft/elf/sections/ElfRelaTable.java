@@ -36,13 +36,29 @@ import net.boricj.bft.elf.constants.ElfSectionType;
 import net.boricj.bft.elf.sections.ElfRelaTable.ElfRela;
 import net.boricj.bft.elf.sections.ElfSymbolTable.ElfSymbol;
 
+/**
+ * ELF relocation table section with explicit addends (RELA format).
+ * Each relocation includes an explicit addend field.
+ */
 public class ElfRelaTable extends ElfSection implements IndirectList<ElfRela> {
+	/**
+	 * An ELF relocation entry with explicit addend.
+	 * The addend is stored directly in the relocation entry.
+	 */
 	public class ElfRela {
 		private final long r_offset;
 		private final ElfSymbol symbol;
 		private final ElfRelocationType type;
 		private final long r_addend;
 
+		/**
+		 * Creates a relocation entry with explicit addend.
+		 *
+		 * @param r_offset the relocation offset
+		 * @param symbol the symbol being relocated
+		 * @param type the relocation type
+		 * @param r_addend the addend value
+		 */
 		protected ElfRela(long r_offset, ElfSymbol symbol, ElfRelocationType type, long r_addend) {
 			Objects.requireNonNull(symbol);
 			Objects.requireNonNull(type);
@@ -57,6 +73,14 @@ public class ElfRelaTable extends ElfSection implements IndirectList<ElfRela> {
 			this.r_addend = r_addend;
 		}
 
+		/**
+		 * Parses a relocation entry from binary data.
+		 *
+		 * @param dataInput the input to read from
+		 * @param ident_class the ELF class (32-bit or 64-bit)
+		 * @param machine the ELF machine type
+		 * @throws IOException if parsing fails
+		 */
 		protected ElfRela(DataInput dataInput, ElfClass ident_class, ElfMachine machine) throws IOException {
 			long r_info;
 			int symidx;
@@ -97,6 +121,13 @@ public class ElfRelaTable extends ElfSection implements IndirectList<ElfRela> {
 			}
 		}
 
+		/**
+		 * Writes this relocation entry to binary output.
+		 *
+		 * @param dataOutput the output to write to
+		 * @param ident_class the ELF class (32-bit or 64-bit)
+		 * @throws IOException if writing fails
+		 */
 		protected void write(DataOutput dataOutput, ElfClass ident_class) throws IOException {
 			long symidx = symbolTable.indexOf(symbol);
 			long typeval = type.getValue();
@@ -119,18 +150,38 @@ public class ElfRelaTable extends ElfSection implements IndirectList<ElfRela> {
 			}
 		}
 
+		/**
+		 * Returns the relocation offset.
+		 *
+		 * @return the offset where the relocation applies
+		 */
 		public long getOffset() {
 			return r_offset;
 		}
 
+		/**
+		 * Returns the symbol associated with this relocation.
+		 *
+		 * @return the relocation symbol
+		 */
 		public ElfSymbol getSymbol() {
 			return symbol;
 		}
 
+		/**
+		 * Returns the relocation type.
+		 *
+		 * @return the type of relocation
+		 */
 		public ElfRelocationType getType() {
 			return type;
 		}
 
+		/**
+		 * Returns the addend value.
+		 *
+		 * @return the relocation addend
+		 */
 		public long getAddend() {
 			return r_addend;
 		}
@@ -140,6 +191,14 @@ public class ElfRelaTable extends ElfSection implements IndirectList<ElfRela> {
 	private final ElfSymbolTable symbolTable;
 	private final ElfSection section;
 
+	/**
+	 * Creates a RELA relocation table for the specified section.
+	 *
+	 * @param elf the parent ELF file
+	 * @param name the section name
+	 * @param symbolTable the associated symbol table
+	 * @param section the section that relocations apply to
+	 */
 	public ElfRelaTable(ElfFile elf, String name, ElfSymbolTable symbolTable, ElfSection section) {
 		this(
 				elf,
@@ -153,6 +212,19 @@ public class ElfRelaTable extends ElfSection implements IndirectList<ElfRela> {
 				section);
 	}
 
+	/**
+	 * Creates a RELA relocation table with complete properties.
+	 *
+	 * @param elf the parent ELF file
+	 * @param name the section name
+	 * @param flags the section flags
+	 * @param addr the virtual address
+	 * @param offset the file offset
+	 * @param addralign the address alignment
+	 * @param entsize the entry size
+	 * @param symbolTable the associated symbol table
+	 * @param section the section that relocations apply to
+	 */
 	public ElfRelaTable(
 			ElfFile elf,
 			String name,
@@ -179,6 +251,21 @@ public class ElfRelaTable extends ElfSection implements IndirectList<ElfRela> {
 		this.section = section;
 	}
 
+	/**
+	 * Parses a RELA relocation table from an ELF file.
+	 *
+	 * @param elf the parent ELF file
+	 * @param parser the ELF parser
+	 * @param flags the section flags
+	 * @param addr the virtual address
+	 * @param offset the file offset
+	 * @param size the section size
+	 * @param link the link index (symbol table)
+	 * @param info the info index (target section)
+	 * @param addralign the address alignment
+	 * @param entsize the entry size
+	 * @throws IOException if parsing fails
+	 */
 	public ElfRelaTable(
 			ElfFile elf,
 			ElfFile.Parser parser,
@@ -231,6 +318,15 @@ public class ElfRelaTable extends ElfSection implements IndirectList<ElfRela> {
 		return Collections.unmodifiableList(relocations);
 	}
 
+	/**
+	 * Adds a new relocation entry to this table.
+	 *
+	 * @param r_offset the relocation offset
+	 * @param symbol the symbol being relocated
+	 * @param type the relocation type
+	 * @param r_addend the addend value
+	 * @return the created relocation entry
+	 */
 	public ElfRela add(long r_offset, ElfSymbol symbol, ElfRelocationType type, long r_addend) {
 		ElfRela relocation = new ElfRela(r_offset, symbol, type, r_addend);
 		relocations.add(relocation);

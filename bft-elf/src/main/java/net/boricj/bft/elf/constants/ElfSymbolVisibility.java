@@ -13,10 +13,17 @@
  */
 package net.boricj.bft.elf.constants;
 
+/**
+ * ELF symbol visibility indicating how a symbol can be accessed.
+ */
 public enum ElfSymbolVisibility {
+	/** Default visibility rules apply. */
 	STV_DEFAULT((byte) 0),
+	/** Processor-specific hidden visibility. */
 	STV_INTERNAL((byte) 1),
+	/** Symbol is not visible to other components. */
 	STV_HIDDEN((byte) 2),
+	/** Symbol is visible but cannot be preempted. */
 	STV_PROTECTED((byte) 3),
 	;
 
@@ -26,10 +33,22 @@ public enum ElfSymbolVisibility {
 		this.value = value;
 	}
 
+	/**
+	 * Returns the byte value of this symbol visibility.
+	 *
+	 * @return the byte value
+	 */
 	public byte getValue() {
 		return value;
 	}
 
+	/**
+	 * Returns the symbol visibility constant for the given byte value.
+	 *
+	 * @param value the byte value to look up
+	 * @return the matching symbol visibility
+	 * @throws IllegalArgumentException if the value is invalid
+	 */
 	public static ElfSymbolVisibility valueFrom(byte value) {
 		for (ElfSymbolVisibility visibility : values()) {
 			if (visibility.getValue() == value) {

@@ -13,9 +13,15 @@
  */
 package net.boricj.bft.elf.constants;
 
+/**
+ * ELF symbol binding indicating the symbol's linkage visibility and scope.
+ */
 public enum ElfSymbolBinding {
+	/** Local symbol not visible outside the object file. */
 	STB_LOCAL((byte) 0),
+	/** Global symbol visible to all object files. */
 	STB_GLOBAL((byte) 1),
+	/** Weak symbol, lower precedence than global symbols. */
 	STB_WEAK((byte) 2),
 	;
 
@@ -25,10 +31,22 @@ public enum ElfSymbolBinding {
 		this.value = value;
 	}
 
+	/**
+	 * Returns the integer value of this symbol binding.
+	 *
+	 * @return the byte value as an integer
+	 */
 	public int getValue() {
 		return value;
 	}
 
+	/**
+	 * Returns the symbol binding constant for the given byte value.
+	 *
+	 * @param value the byte value to look up
+	 * @return the matching symbol binding
+	 * @throws IllegalArgumentException if the value is invalid
+	 */
 	public static ElfSymbolBinding valueFrom(byte value) {
 		for (ElfSymbolBinding binding : values()) {
 			if (binding.getValue() == value) {

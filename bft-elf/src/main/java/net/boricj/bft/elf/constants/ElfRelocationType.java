@@ -13,8 +13,22 @@
  */
 package net.boricj.bft.elf.constants;
 
+/**
+ * Interface for ELF relocation types.
+ * Machine-specific relocation types implement this interface.
+ */
 public interface ElfRelocationType {
+	/**
+	 * Returns the machine architecture this relocation type is for.
+	 *
+	 * @return the machine type
+	 */
 	public ElfMachine getMachine();
 
+	/**
+	 * Returns the integer value of this relocation type.
+	 *
+	 * @return the relocation type value
+	 */
 	public int getValue();
 }

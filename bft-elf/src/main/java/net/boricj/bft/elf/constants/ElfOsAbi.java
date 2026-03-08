@@ -13,7 +13,11 @@
  */
 package net.boricj.bft.elf.constants;
 
+/**
+ * ELF OS/ABI identification indicating the target operating system and ABI.
+ */
 public enum ElfOsAbi {
+	/** UNIX System V ABI. */
 	ELFOSABI_NONE((byte) 0),
 	;
 
@@ -23,10 +27,22 @@ public enum ElfOsAbi {
 		this.value = value;
 	}
 
+	/**
+	 * Returns the byte value of this OS/ABI.
+	 *
+	 * @return the byte value
+	 */
 	public byte getValue() {
 		return value;
 	}
 
+	/**
+	 * Returns the OS/ABI constant for the given byte value.
+	 *
+	 * @param value the byte value to look up
+	 * @return the matching OS/ABI
+	 * @throws IllegalArgumentException if the value is invalid
+	 */
 	public static ElfOsAbi valueFrom(byte value) {
 		for (ElfOsAbi osAbi : values()) {
 			if (osAbi.getValue() == value) {

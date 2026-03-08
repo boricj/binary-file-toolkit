@@ -13,11 +13,19 @@
  */
 package net.boricj.bft.elf.constants;
 
+/**
+ * ELF object file type.
+ */
 public enum ElfType {
+	/** No file type. */
 	ET_NONE((short) 0),
+	/** Relocatable file. */
 	ET_REL((short) 1),
+	/** Executable file. */
 	ET_EXEC((short) 2),
+	/** Shared object file. */
 	ET_DYN((short) 3),
+	/** Core file. */
 	ET_CORE((short) 4),
 	;
 
@@ -27,10 +35,22 @@ public enum ElfType {
 		this.value = value;
 	}
 
+	/**
+	 * Returns the short value of this file type.
+	 *
+	 * @return the short value
+	 */
 	public short getValue() {
 		return value;
 	}
 
+	/**
+	 * Returns the file type constant for the given short value.
+	 *
+	 * @param value the short value to look up
+	 * @return the matching file type
+	 * @throws IllegalArgumentException if the value is invalid
+	 */
 	public static ElfType valueFrom(short value) {
 		for (ElfType type : values()) {
 			if (type.getValue() == value) {

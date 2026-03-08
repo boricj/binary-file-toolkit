@@ -21,13 +21,38 @@ import net.boricj.bft.elf.ElfSection;
 import net.boricj.bft.elf.ElfSectionFlags;
 import net.boricj.bft.elf.constants.ElfSectionType;
 
+/**
+ * ELF section occupying no space in the file (SHT_NOBITS).
+ * Represents uninitialized data sections like .bss that don't store actual bytes.
+ */
 public class ElfNoBits extends ElfSection {
 	private final long size;
 
+	/**
+	 * Creates a NOBITS section with the specified size.
+	 *
+	 * @param elf the parent ELF file
+	 * @param name section name
+	 * @param flags section flags
+	 * @param addralign address alignment
+	 * @param size virtual size of the section
+	 */
 	public ElfNoBits(ElfFile elf, String name, ElfSectionFlags flags, long addralign, long size) {
 		this(elf, name, flags, 0, 0, addralign, 0, size);
 	}
 
+	/**
+	 * Creates a NOBITS section with full parameters.
+	 *
+	 * @param elf the parent ELF file
+	 * @param name section name
+	 * @param flags section flags
+	 * @param address virtual address
+	 * @param offset file offset
+	 * @param addralign address alignment
+	 * @param entsize entry size
+	 * @param size virtual size of the section
+	 */
 	public ElfNoBits(
 			ElfFile elf,
 			String name,
@@ -42,6 +67,21 @@ public class ElfNoBits extends ElfSection {
 		this.size = size;
 	}
 
+	/**
+	 * Parses a NOBITS section from an input stream.
+	 *
+	 * @param elf the parent ELF file
+	 * @param parser parser containing input stream
+	 * @param flags section flags
+	 * @param addr virtual address
+	 * @param offset file offset
+	 * @param size section size
+	 * @param link link to another section
+	 * @param info additional section information
+	 * @param addralign address alignment
+	 * @param entsize entry size
+	 * @throws IOException if reading fails
+	 */
 	public ElfNoBits(
 			ElfFile elf,
 			ElfFile.Parser parser,

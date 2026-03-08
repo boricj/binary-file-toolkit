@@ -33,21 +33,53 @@ import net.boricj.bft.elf.ElfSection;
 import net.boricj.bft.elf.ElfSectionFlags;
 import net.boricj.bft.elf.constants.ElfSectionType;
 
+/**
+ * ELF string table section for storing symbol names and section names.
+ * Strings are stored as null-terminated sequences and referenced by offset.
+ */
 public class ElfStringTable extends ElfSection implements Iterable<Integer> {
+	/** Default character encoding for string tables. */
 	public static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
 	private final TreeMap<Integer, byte[]> strings = new TreeMap<>();
 	private final Map<String, Integer> lookup = new HashMap<>();
 	private final Charset charset;
 
+	/**
+	 * Creates a new string table with default settings.
+	 *
+	 * @param elf parent ELF file
+	 * @param name section name
+	 */
 	public ElfStringTable(ElfFile elf, String name) {
 		this(elf, name, new ElfSectionFlags(), 1, 0);
 	}
 
+	/**
+	 * Creates a new string table with specified flags and alignment.
+	 *
+	 * @param elf parent ELF file
+	 * @param name section name
+	 * @param flags section flags
+	 * @param addralign section alignment
+	 * @param entsize entry size
+	 */
 	public ElfStringTable(ElfFile elf, String name, ElfSectionFlags flags, long addralign, long entsize) {
 		this(elf, name, flags, 0, 0, addralign, entsize, DEFAULT_CHARSET);
 	}
 
+	/**
+	 * Creates a new string table with full settings.
+	 *
+	 * @param elf parent ELF file
+	 * @param name section name
+	 * @param flags section flags
+	 * @param addr section virtual address
+	 * @param offset section file offset
+	 * @param addralign section alignment
+	 * @param entsize entry size
+	 * @param charset character encoding for strings
+	 */
 	public ElfStringTable(
 			ElfFile elf,
 			String name,
@@ -64,6 +96,21 @@ public class ElfStringTable extends ElfSection implements Iterable<Integer> {
 		this.charset = charset;
 	}
 
+	/**
+	 * Reads a string table from an ELF file.
+	 *
+	 * @param elf parent ELF file
+	 * @param parser ELF file parser
+	 * @param flags section flags
+	 * @param addr section virtual address
+	 * @param offset section file offset
+	 * @param size section size in bytes
+	 * @param link section link index
+	 * @param info section info field
+	 * @param addralign section alignment
+	 * @param entsize entry size
+	 * @throws IOException if an I/O error occurs
+	 */
 	public ElfStringTable(
 			ElfFile elf,
 			ElfFile.Parser parser,
@@ -98,6 +145,12 @@ public class ElfStringTable extends ElfSection implements Iterable<Integer> {
 		}
 	}
 
+	/**
+	 * Adds a string to the string table.
+	 *
+	 * @param string string to add
+	 * @return offset of the string in the table
+	 */
 	public int add(String string) {
 		Objects.requireNonNull(string);
 
@@ -121,6 +174,14 @@ public class ElfStringTable extends ElfSection implements Iterable<Integer> {
 		return nextKey;
 	}
 
+	/**
+	 * Adds an alias string that shares storage with an existing string.
+	 * The alias must be a suffix of the target string.
+	 *
+	 * @param alias alias string to add
+	 * @param target existing string that ends with the alias
+	 * @return offset of the alias in the table
+	 */
 	public int add(String alias, String target) {
 		Objects.requireNonNull(alias);
 		Objects.requireNonNull(target);
@@ -138,6 +199,12 @@ public class ElfStringTable extends ElfSection implements Iterable<Integer> {
 		return nextKey;
 	}
 
+	/**
+	 * Gets a string from the table by its offset.
+	 *
+	 * @param index offset into the string table
+	 * @return the string at the given offset
+	 */
 	public String get(int index) {
 		Entry<Integer, byte[]> entry = strings.floorEntry(index);
 		if (entry == null || index < 0) {
@@ -154,6 +221,13 @@ public class ElfStringTable extends ElfSection implements Iterable<Integer> {
 		return string;
 	}
 
+	/**
+	 * Finds the offset of a string in the table.
+	 *
+	 * @param string string to find
+	 * @return offset of the string
+	 * @throws NoSuchElementException if the string is not in the table
+	 */
 	public int find(String string) {
 		Integer index = lookup.get(string);
 		if (index == null) {

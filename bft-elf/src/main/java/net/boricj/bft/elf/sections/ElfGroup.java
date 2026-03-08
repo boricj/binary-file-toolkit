@@ -30,12 +30,31 @@ import net.boricj.bft.elf.ElfSectionTable;
 import net.boricj.bft.elf.constants.ElfSectionType;
 import net.boricj.bft.elf.sections.ElfSymbolTable.ElfSymbol;
 
+/**
+ * ELF section group containing a set of related sections.
+ * Section groups are used to mark sections that must be kept together during linking.
+ */
 public class ElfGroup extends ElfSection implements IndirectList<ElfSection> {
 	private final ElfSymbolTable symbolTable;
 	private final ElfSymbol signature;
 	private final int flags;
 	private final List<ElfSection> sections = new ArrayList<>();
 
+	/**
+	 * Parses an ELF section group from an input stream.
+	 *
+	 * @param elf the parent ELF file
+	 * @param parser parser containing input stream
+	 * @param flags section flags
+	 * @param addr virtual address
+	 * @param offset file offset
+	 * @param size section size
+	 * @param link symbol table section index
+	 * @param info signature symbol index
+	 * @param addralign address alignment
+	 * @param entsize entry size
+	 * @throws IOException if reading fails
+	 */
 	public ElfGroup(
 			ElfFile elf,
 			ElfFile.Parser parser,
@@ -86,6 +105,11 @@ public class ElfGroup extends ElfSection implements IndirectList<ElfSection> {
 		}
 	}
 
+	/**
+	 * Returns the signature symbol for this section group.
+	 *
+	 * @return the signature symbol
+	 */
 	public ElfSymbol getSignature() {
 		return signature;
 	}

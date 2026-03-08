@@ -13,9 +13,15 @@
  */
 package net.boricj.bft.elf.constants;
 
+/**
+ * ELF data encoding indicating the byte order (endianness) of the file.
+ */
 public enum ElfData {
+	/** Invalid data encoding. */
 	ELFDATANONE((byte) 0),
+	/** Little-endian (LSB) data encoding. */
 	ELFDATA2LSB((byte) 1),
+	/** Big-endian (MSB) data encoding. */
 	ELFDATA2MSB((byte) 2),
 	;
 
@@ -25,10 +31,22 @@ public enum ElfData {
 		this.value = value;
 	}
 
+	/**
+	 * Returns the byte value of this data encoding.
+	 *
+	 * @return the byte value
+	 */
 	public byte getValue() {
 		return value;
 	}
 
+	/**
+	 * Returns the data encoding constant for the given byte value.
+	 *
+	 * @param value the byte value to look up
+	 * @return the matching data encoding
+	 * @throws IllegalArgumentException if the value is invalid
+	 */
 	public static ElfData valueFrom(byte value) {
 		for (ElfData data : values()) {
 			if (data.getValue() == value) {

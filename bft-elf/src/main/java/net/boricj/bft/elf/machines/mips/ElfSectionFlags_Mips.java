@@ -15,15 +15,27 @@ package net.boricj.bft.elf.machines.mips;
 
 import net.boricj.bft.elf.ElfSectionFlags;
 
+/**
+ * MIPS-specific section flags.
+ * Extends the standard ELF section flags with MIPS-specific attributes.
+ */
 public class ElfSectionFlags_Mips extends ElfSectionFlags {
 	private static final long SHF_MIPS_GPREL = 0x10000000;
 
 	private static final long BITMASK = SHF_MIPS_GPREL;
 
+	/**
+	 * Creates a new empty MIPS section flags object.
+	 */
 	public ElfSectionFlags_Mips() {
 		super();
 	}
 
+	/**
+	 * Creates MIPS section flags from a flags value.
+	 *
+	 * @param flags flags value to parse
+	 */
 	public ElfSectionFlags_Mips(long flags) {
 		super(flags & ~BITMASK);
 
@@ -33,11 +45,21 @@ public class ElfSectionFlags_Mips extends ElfSectionFlags {
 		}
 	}
 
+	/**
+	 * Sets the MIPS GPREL flag.
+	 *
+	 * @return this flags object
+	 */
 	public ElfSectionFlags_Mips mipsGpRel() {
 		value |= SHF_MIPS_GPREL;
 		return this;
 	}
 
+	/**
+	 * Checks if the MIPS GPREL flag is set.
+	 *
+	 * @return true if GPREL flag is set
+	 */
 	public boolean isMipsGpRel() {
 		return (value & SHF_MIPS_GPREL) != 0;
 	}
