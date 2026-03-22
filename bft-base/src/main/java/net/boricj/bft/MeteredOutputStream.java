@@ -16,19 +16,35 @@ package net.boricj.bft;
 import java.io.IOException;
 import java.io.OutputStream;
 
-class MeteredOutputStream extends OutputStream {
+/**
+ * Output stream wrapper that counts the number of bytes written through it.
+ */
+public class MeteredOutputStream extends OutputStream {
 	private final OutputStream out;
 	private long count;
 
+	/**
+	 * Creates a metered wrapper around an existing output stream.
+	 *
+	 * @param out wrapped output stream
+	 */
 	public MeteredOutputStream(OutputStream out) {
 		this.out = out;
 		this.count = 0;
 	}
 
+	/**
+	 * Returns the number of bytes written since construction or the last reset.
+	 *
+	 * @return byte count
+	 */
 	public long getCount() {
 		return count;
 	}
 
+	/**
+	 * Resets the counted byte total to zero.
+	 */
 	public void reset() {
 		count = 0;
 	}
