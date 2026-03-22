@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /** Interface for objects that can be written to an output stream at a specific offset. */
-public interface Writable {
+public interface Writable extends StreamWritable {
 	/**
 	 * Returns the file offset where this object should be written.
 	 *
@@ -34,7 +34,10 @@ public interface Writable {
 	 *
 	 * @return the serialized length in bytes
 	 */
-	public long getLength();
+	@Override
+	public default long getLength() {
+		return StreamWritable.super.getLength();
+	}
 
 	/**
 	 * Writes this object to the given output stream.
@@ -92,7 +95,7 @@ public interface Writable {
 		MeteredOutputStream mos = new MeteredOutputStream(outputStream);
 		for (Writable writable : sortedWritables) {
 			for (long offset = mos.getCount(); offset < writable.getOffset(); offset++) {
-				mos.write(0x00);
+				mos.write(padding);
 			}
 
 			long offset = mos.getCount();
