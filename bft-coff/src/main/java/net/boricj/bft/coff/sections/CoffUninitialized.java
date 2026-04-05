@@ -13,10 +13,8 @@
  */
 package net.boricj.bft.coff.sections;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Objects;
 
 import net.boricj.bft.coff.CoffFile;
 import net.boricj.bft.coff.CoffRelocationTable;
@@ -24,46 +22,41 @@ import net.boricj.bft.coff.CoffSection;
 import net.boricj.bft.coff.constants.CoffSectionFlags;
 
 /**
- * A COFF section containing raw byte data.
- * Represents sections with initialized data such as code or data segments.
+ * A COFF section that reserves virtual space without storing raw bytes.
  */
-public class CoffBytes extends CoffSection {
-	private final byte[] bytes;
-
+public class CoffUninitialized extends CoffSection {
 	/**
-	 * Creates a bytes section with in-memory data.
+	 * Creates an uninitialized section.
 	 *
 	 * @param coff parent COFF file
 	 * @param name section name
 	 * @param characteristics section characteristics flags
-	 * @param bytes section data bytes
+	 * @param virtualSize section virtual size in bytes
 	 */
-	public CoffBytes(CoffFile coff, String name, CoffSectionFlags characteristics, byte[] bytes) {
-		super(coff, name, bytes.length, 0, 0, 0, characteristics);
-		Objects.requireNonNull(bytes);
+	public CoffUninitialized(CoffFile coff, String name, CoffSectionFlags characteristics, int virtualSize) {
+		super(coff, name, virtualSize, 0, 0, 0, characteristics);
 
 		this.relocationTable = new CoffRelocationTable(coff, this);
-		this.bytes = bytes;
 	}
 
 	/**
-	 * Creates a bytes section by reading from a COFF parser.
+	 * Creates an uninitialized section by reading section metadata from a parser.
 	 *
 	 * @param coff parent COFF file
 	 * @param parser COFF file parser
 	 * @param name section name
 	 * @param physicalAddress section physical address
 	 * @param virtualAddress section virtual address
-	 * @param sizeOfRawData section size in bytes
-	 * @param pointerToRawData file offset to section bytes
+	 * @param sizeOfRawData section virtual size in bytes
+	 * @param pointerToRawData file offset of section raw data
 	 * @param pointerToRelocations file offset to relocations
 	 * @param pointerToLineNumbers file offset to line numbers
 	 * @param numberOfRelocations relocation count
 	 * @param numberOfLinenumbers line number count
 	 * @param characteristics section characteristics flags
-	 * @throws IOException if an I/O error occurs while reading section data
+	 * @throws IOException if an I/O error occurs while reading relocations
 	 */
-	public CoffBytes(
+	public CoffUninitialized(
 			CoffFile coff,
 			CoffFile.Parser parser,
 			String name,
@@ -79,31 +72,14 @@ public class CoffBytes extends CoffSection {
 			throws IOException {
 		super(coff, name, sizeOfRawData, physicalAddress, virtualAddress, pointerToRawData, characteristics);
 
-		this.bytes = new byte[(int) sizeOfRawData];
-
-		FileInputStream fis = parser.getFileInputStream();
-		fis.getChannel().position(pointerToRawData);
-		fis.readNBytes(bytes, 0, sizeOfRawData);
-
 		this.relocationTable = new CoffRelocationTable(coff, parser, this, pointerToRelocations, numberOfRelocations);
-	}
-
-	/**
-	 * Returns the raw byte data contained in this section.
-	 *
-	 * @return section data bytes
-	 */
-	public byte[] getBytes() {
-		return bytes;
 	}
 
 	@Override
 	public long getLength() {
-		return bytes.length;
+		return 0;
 	}
 
 	@Override
-	public void write(OutputStream outputStream) throws IOException {
-		outputStream.write(bytes);
-	}
+	public void write(OutputStream outputStream) throws IOException {}
 }

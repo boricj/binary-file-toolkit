@@ -347,7 +347,7 @@ public class CoffSymbolTable implements IndirectList<CoffSymbol>, Writable {
 				numberOfRelocations = 0xFFFF;
 			}
 
-			dataOutput.writeInt((int) section.getLength());
+			dataOutput.writeInt(section.getVirtualSize());
 			dataOutput.writeShort(numberOfRelocations);
 			dataOutput.writeShort(0); // NumberOfLinenumbers
 			dataOutput.writeInt(0); // CheckSum

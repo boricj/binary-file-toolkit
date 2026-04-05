@@ -31,6 +31,7 @@ import net.boricj.bft.IndirectList;
 import net.boricj.bft.Writable;
 import net.boricj.bft.coff.constants.CoffSectionFlags;
 import net.boricj.bft.coff.sections.CoffBytes;
+import net.boricj.bft.coff.sections.CoffUninitialized;
 
 import static net.boricj.bft.coff.CoffRelocationTable.EXTENDED_RELOCATIONS_COUNT;
 
@@ -97,7 +98,7 @@ public class CoffSectionTable implements IndirectList<CoffSection>, Writable {
 			dataOutput.write(stringTable.encodeSecName(section.getName()));
 			dataOutput.writeInt(section.getPhysicalAddress());
 			dataOutput.writeInt(section.getVirtualAddress());
-			dataOutput.writeInt((int) section.getLength());
+			dataOutput.writeInt(section.getVirtualSize());
 			dataOutput.writeInt((int) section.getOffset());
 			dataOutput.writeInt((int) relocationTable.getOffset());
 			dataOutput.writeInt(0); // PointerToLinenumbers
@@ -137,20 +138,39 @@ public class CoffSectionTable implements IndirectList<CoffSection>, Writable {
 			int numberOfRelocations = dataInput.readUnsignedShort();
 			short numberOfLinenumbers = dataInput.readShort();
 			CoffSectionFlags characteristics = new CoffSectionFlags(dataInput.readInt());
+			boolean hasUninitializedFlag =
+					(characteristics.getValue() & CoffSectionFlags.IMAGE_SCN_CNT_UNINITIALIZED_DATA) != 0;
+			boolean hasRawBytes = sizeOfRawData > 0 && pointerToRawData > 0;
 
-			section = new CoffBytes(
-					coff,
-					parser,
-					name,
-					physicalAddress,
-					virtualAddress,
-					sizeOfRawData,
-					pointerToRawData,
-					pointerToRelocations,
-					pointerToLineNumbers,
-					numberOfRelocations,
-					numberOfLinenumbers,
-					characteristics);
+			if (hasUninitializedFlag && !hasRawBytes) {
+				section = new CoffUninitialized(
+						coff,
+						parser,
+						name,
+						physicalAddress,
+						virtualAddress,
+						sizeOfRawData,
+						pointerToRawData,
+						pointerToRelocations,
+						pointerToLineNumbers,
+						numberOfRelocations,
+						numberOfLinenumbers,
+						characteristics);
+			} else {
+				section = new CoffBytes(
+						coff,
+						parser,
+						name,
+						physicalAddress,
+						virtualAddress,
+						sizeOfRawData,
+						pointerToRawData,
+						pointerToRelocations,
+						pointerToLineNumbers,
+						numberOfRelocations,
+						numberOfLinenumbers,
+						characteristics);
+			}
 			table.set(index, section);
 		}
 

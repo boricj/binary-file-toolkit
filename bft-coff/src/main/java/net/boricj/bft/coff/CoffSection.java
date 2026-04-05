@@ -22,6 +22,7 @@ import net.boricj.bft.coff.constants.CoffSectionFlags;
 public abstract class CoffSection implements Writable {
 	private final CoffFile coff;
 	private final String name;
+	private int virtualSize;
 	private int physicalAddress;
 	private int virtualAddress;
 	private int pointerToRawData;
@@ -34,6 +35,7 @@ public abstract class CoffSection implements Writable {
 	 *
 	 * @param coff parent COFF file
 	 * @param name section name
+	 * @param virtualSize section virtual size
 	 * @param physicalAddress section physical address
 	 * @param virtualAddress section virtual address
 	 * @param pointerToRawData file offset of section data
@@ -42,6 +44,7 @@ public abstract class CoffSection implements Writable {
 	public CoffSection(
 			CoffFile coff,
 			String name,
+			int virtualSize,
 			int physicalAddress,
 			int virtualAddress,
 			int pointerToRawData,
@@ -52,6 +55,7 @@ public abstract class CoffSection implements Writable {
 
 		this.coff = coff;
 		this.name = name;
+		this.virtualSize = virtualSize;
 		this.physicalAddress = physicalAddress;
 		this.virtualAddress = virtualAddress;
 		this.pointerToRawData = pointerToRawData;
@@ -82,7 +86,16 @@ public abstract class CoffSection implements Writable {
 	 * @return the virtual size
 	 */
 	public int getVirtualSize() {
-		return (int) getLength();
+		return virtualSize;
+	}
+
+	/**
+	 * Sets the virtual size of this section.
+	 *
+	 * @param virtualSize new virtual size
+	 */
+	public void setVirtualSize(int virtualSize) {
+		this.virtualSize = virtualSize;
 	}
 
 	/**
