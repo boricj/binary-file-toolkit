@@ -19,8 +19,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -33,6 +35,8 @@ import org.junit.jupiter.api.AssertionFailureBuilder;
  * with support for applying patches and detailed error reporting on mismatches.
  */
 public class TestUtils {
+	private record Span(int offset, int length) {}
+
 	private TestUtils() {
 		// Utility class, no instances allowed
 	}
@@ -85,18 +89,44 @@ public class TestUtils {
 	 * @param actual the actual byte array
 	 */
 	public static void assertArrayEquals(byte[] expected, byte[] actual) {
-		// Find first difference for debugging.
-		int firstDiff = -1;
+		StringBuffer sb = new StringBuffer();
+		if (expected.length != actual.length) {
+			sb.append(String.format(
+					"Byte arrays differ in length: expected %d bytes, actual %d bytes.\n",
+					expected.length, actual.length));
+		}
+
+		List<Span> differences = new ArrayList<>();
+
+		// Find differences.
+		boolean inDiff = false;
 		for (int i = 0; i < Math.max(expected.length, actual.length); i++) {
-			if (i == Math.min(expected.length, actual.length) || (expected[i] != actual[i])) {
-				firstDiff = i;
-				break;
+			if (i >= Math.min(expected.length, actual.length) || (expected[i] != actual[i])) {
+				if (!inDiff) {
+					differences.add(new Span(i, 0));
+					inDiff = true;
+				}
+			} else if (expected[i] == actual[i]) {
+				if (inDiff) {
+					Span last = differences.get(differences.size() - 1);
+					differences.set(differences.size() - 1, new Span(last.offset(), i - last.offset()));
+					inDiff = false;
+				}
 			}
 		}
 
-		if (firstDiff >= 0) {
+		if (inDiff) {
+			Span last = differences.get(differences.size() - 1);
+			differences.set(
+					differences.size() - 1,
+					new Span(last.offset(), Math.max(expected.length, actual.length) - last.offset()));
+			inDiff = false;
+		}
+
+		int count = 0;
+		for (Span diff : differences) {
 			// Build context around the first difference (12 bytes before and after) for error message.
-			int start = Math.max(0, firstDiff - 12);
+			int start = Math.max(0, diff.offset() - 12);
 			int end = Math.min(start + 24, Math.max(expected.length, actual.length));
 
 			StringBuffer expected_values = new StringBuffer();
@@ -108,18 +138,24 @@ public class TestUtils {
 			}
 
 			for (int i = start; i <= end; i++) {
+				String before = " ";
+				String after = " ";
 				String exp = i < expected.length ? String.format("%02x", expected[i] & 0xff) : "--";
 				String act = i < actual.length ? String.format("%02x", actual[i] & 0xff) : "--";
 
-				if (i == firstDiff) {
-					exp = "[" + exp + "]";
-					act = "[" + act + "]";
-				} else {
-					exp = " " + exp + " ";
-					act = " " + act + " ";
+				if (i == diff.offset()) {
+					before = "[";
 				}
+				if (i == diff.offset() + diff.length() - 1) {
+					after = "]";
+				}
+
+				expected_values.append(before);
 				expected_values.append(exp);
+				expected_values.append(after);
+				actual_values.append(before);
 				actual_values.append(act);
+				actual_values.append(after);
 			}
 
 			if (end < expected.length) {
@@ -129,17 +165,19 @@ public class TestUtils {
 				actual_values.append("... ");
 			}
 
-			// Format error message with context around the first difference.
-			StringBuffer sb = new StringBuffer();
-			if (expected.length != actual.length) {
-				sb.append(String.format(
-						"Byte arrays differ in length: expected %d bytes, actual %d bytes.\n",
-						expected.length, actual.length));
-			}
-			sb.append(String.format("Byte arrays differ at offset 0x%04x (byte %d):\n", firstDiff, firstDiff));
+			sb.append(String.format(
+					"Byte arrays differ at offset 0x%04x (byte %d) length %d:\n",
+					diff.offset(), diff.offset(), diff.length()));
 			sb.append(String.format("Expected:\n  %s\n", expected_values.toString()));
 			sb.append(String.format("Actual:\n  %s\n", actual_values.toString()));
 
+			if (++count > 4) {
+				sb.append(String.format("... and %d more differences.\n", differences.size() - count));
+				break;
+			}
+		}
+
+		if (sb.length() > 0) {
 			AssertionFailureBuilder.assertionFailure().message(sb.toString()).buildAndThrow();
 		}
 	}
