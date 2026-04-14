@@ -181,7 +181,7 @@ public class ElfSectionFlags {
 	 * @return true if section contains executable instructions
 	 */
 	public boolean isExecInstr() {
-		return (value & SHF_WRITE) != 0;
+		return (value & SHF_EXECINSTR) != 0;
 	}
 
 	/**
