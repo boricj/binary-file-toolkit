@@ -15,6 +15,7 @@ package net.boricj.bft.coff.constants;
 
 import net.boricj.bft.coff.machines.amd64.CoffRelocationType_amd64;
 import net.boricj.bft.coff.machines.i386.CoffRelocationType_i386;
+import net.boricj.bft.coff.machines.ppc.CoffRelocationType_ppc;
 
 /**
  * COFF machine identifiers.
@@ -26,6 +27,12 @@ public enum CoffMachine {
 	IMAGE_FILE_MACHINE_I386((short) 0x14c, CoffRelocationType_i386.class),
 	/** AMD64 machine type. */
 	IMAGE_FILE_MACHINE_AMD64((short) 0x8664, CoffRelocationType_amd64.class),
+	/** PowerPC little-endian machine type. */
+	IMAGE_FILE_MACHINE_POWERPC((short) 0x1f0, CoffRelocationType_ppc.class),
+	/** PowerPC with floating-point support machine type. */
+	IMAGE_FILE_MACHINE_POWERPCFP((short) 0x1f1, CoffRelocationType_ppc.class),
+	/** PowerPC big-endian machine type. */
+	IMAGE_FILE_MACHINE_POWERPCBE((short) 0x1f2, CoffRelocationType_ppc.class),
 	;
 
 	private final short value;
