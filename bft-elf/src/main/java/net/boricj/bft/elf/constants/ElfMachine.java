@@ -19,6 +19,7 @@ import net.boricj.bft.elf.machines.i386.ElfRelocationType_i386;
 import net.boricj.bft.elf.machines.mips.ElfRelocationType_Mips;
 import net.boricj.bft.elf.machines.mips.ElfSectionFlags_Mips;
 import net.boricj.bft.elf.machines.ppc.ElfRelocationType_ppc;
+import net.boricj.bft.elf.machines.ppc.ElfRelocationType_ppc64;
 
 /**
  * ELF target machine architecture types.
@@ -32,6 +33,8 @@ public enum ElfMachine {
 	EM_MIPS((short) 8, "MIPS R3000", ElfSectionFlags_Mips.class, ElfRelocationType_Mips.class),
 	/** PowerPC. */
 	EM_PPC((short) 20, "PowerPC", ElfSectionFlags.class, ElfRelocationType_ppc.class),
+	/** 64-bit PowerPC. */
+	EM_PPC64((short) 21, "PowerPC64", ElfSectionFlags.class, ElfRelocationType_ppc64.class),
 	/** AMD x86-64. */
 	EM_X86_64((short) 62, "Advanced Micro Devices X86-64", ElfSectionFlags.class, ElfRelocationType_amd64.class),
 	;
