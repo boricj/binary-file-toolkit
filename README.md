@@ -15,6 +15,7 @@ This is a set of Java libraries for reading and writing file formats used by too
 ### Debugging symbols formats
 
 * `bft-codeview`: library for the _CodeView_ debugging symbols format.
+* `bft-ctf`: library for the _C Compact Type Format_ specification.
 
 ## Documentation
 
