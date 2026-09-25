@@ -6,8 +6,8 @@
 		<artifactId>bft</artifactId>
 		<version>0.8.0-SNAPSHOT</version>
 	</parent>
-	<artifactId>bft-elf</artifactId>
-	<name>boricj's binary file toolkit - ELF</name>
+	<artifactId>bft-image-elf</artifactId>
+	<name>boricj's binary file toolkit - image/ELF adapter</name>
 	<url>https://github.com/boricj/binary-file-toolkit</url>
 	<dependencies>
 		<dependency>
@@ -21,7 +21,17 @@
 		</dependency>
 		<dependency>
 			<groupId>net.boricj</groupId>
-			<artifactId>bft-base-tests</artifactId>
+			<artifactId>bft-image</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.boricj</groupId>
+			<artifactId>bft-elf</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.boricj</groupId>
+			<artifactId>bft-elf</artifactId>
+			<classifier>tests</classifier>
+			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -31,18 +41,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>attach-test-jar</id>
-						<goals>
-							<goal>test-jar</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 	</build>
