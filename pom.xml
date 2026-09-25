@@ -29,6 +29,7 @@
 		<module>bft-ctf</module>
 		<module>bft-dwarf</module>
 		<module>bft-elf</module>
+		<module>bft-image</module>
 		<module>bft-omf</module>
 	</modules>
 	<scm>
@@ -103,6 +104,11 @@
 			<dependency>
 				<groupId>net.boricj</groupId>
 				<artifactId>bft-elf</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.boricj</groupId>
+				<artifactId>bft-image</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>

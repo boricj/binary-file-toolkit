@@ -5,6 +5,7 @@ This is a set of Java libraries for reading and writing file formats used by too
 ## Modules
 
 * `bft-base`: library containing common base classes.
+* `bft-image`: library for format-independent file processing.
 
 ### File formats
 
