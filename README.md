@@ -5,9 +5,16 @@ This is a set of Java libraries for reading and writing file formats used by too
 ## Modules
 
 * `bft-base`: library containing common base classes.
+
+### File formats
+
 * `bft-coff`: library for the _Common Object File Format_ specification.
 * `bft-elf`: library for the _Executable and Linkable File_ specification.
 * `bft-omf`: library for the _Object Module Format_ specification.
+
+### Debugging symbols formats
+
+* `bft-codeview`: library for the _CodeView_ debugging symbols format.
 
 ## Documentation
 

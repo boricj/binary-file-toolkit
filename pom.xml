@@ -24,6 +24,7 @@
 	<modules>
 		<module>bft-base</module>
 		<module>bft-base-tests</module>
+		<module>bft-codeview</module>
 		<module>bft-coff</module>
 		<module>bft-elf</module>
 		<module>bft-omf</module>
@@ -75,6 +76,11 @@
 			<dependency>
 				<groupId>net.boricj</groupId>
 				<artifactId>bft-base-tests</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.boricj</groupId>
+				<artifactId>bft-codeview</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
