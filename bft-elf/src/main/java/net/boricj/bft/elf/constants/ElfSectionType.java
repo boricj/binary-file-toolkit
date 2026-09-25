@@ -48,6 +48,8 @@ public enum ElfSectionType {
 
 	/** MIPS register information. */
 	SHT_MIPS_REGINFO(0x70000006, ElfMachine.EM_MIPS, ElfRegInfo_Mips.class),
+	/** MIPS DWARF debug data sections (legacy MIPS-specific section type). */
+	SHT_MIPS_DWARF(0x7000001e, ElfMachine.EM_MIPS, ElfProgBits.class),
 	/** MIPS ABI flags. */
 	SHT_MIPS_ABIFLAGS(0x7000002a, ElfMachine.EM_MIPS, ElfAbiFlags_Mips.class),
 	;
