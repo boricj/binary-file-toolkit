@@ -27,6 +27,7 @@
 		<module>bft-codeview</module>
 		<module>bft-coff</module>
 		<module>bft-ctf</module>
+		<module>bft-dwarf</module>
 		<module>bft-elf</module>
 		<module>bft-omf</module>
 	</modules>
@@ -92,6 +93,11 @@
 			<dependency>
 				<groupId>net.boricj</groupId>
 				<artifactId>bft-ctf</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.boricj</groupId>
+				<artifactId>bft-dwarf</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
