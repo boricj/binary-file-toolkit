@@ -13,6 +13,7 @@
  */
 package net.boricj.bft.elf.sections;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -131,7 +132,7 @@ public class ElfStringTable extends ElfSection implements Iterable<Integer> {
 		byte[] bytes = new byte[(int) size];
 		fis.readNBytes(bytes, 0, bytes.length);
 
-		ByteInputStream bis = ByteInputStream.asLittleEndian(bytes);
+		ByteInputStream bis = elf.wrap(new ByteArrayInputStream(bytes));
 		while (bis.available() > 0) {
 			add(bis.readNullTerminatedString(charset));
 		}
