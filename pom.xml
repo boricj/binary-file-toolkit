@@ -77,6 +77,21 @@
 				<artifactId>bft-base-tests</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>net.boricj</groupId>
+				<artifactId>bft-coff</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.boricj</groupId>
+				<artifactId>bft-elf</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.boricj</groupId>
+				<artifactId>bft-omf</artifactId>
+				<version>${project.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 	<build>
