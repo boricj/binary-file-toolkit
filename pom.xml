@@ -30,6 +30,7 @@
 		<module>bft-dwarf</module>
 		<module>bft-elf</module>
 		<module>bft-image</module>
+		<module>bft-image-coff</module>
 		<module>bft-omf</module>
 	</modules>
 	<scm>
@@ -93,6 +94,14 @@
 			</dependency>
 			<dependency>
 				<groupId>net.boricj</groupId>
+				<artifactId>bft-coff</artifactId>
+				<version>${project.version}</version>
+				<classifier>tests</classifier>
+				<type>test-jar</type>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>net.boricj</groupId>
 				<artifactId>bft-ctf</artifactId>
 				<version>${project.version}</version>
 			</dependency>
@@ -109,6 +118,11 @@
 			<dependency>
 				<groupId>net.boricj</groupId>
 				<artifactId>bft-image</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.boricj</groupId>
+				<artifactId>bft-image-coff</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
