@@ -567,8 +567,19 @@ public class CoffSymbolTable implements IndirectList<CoffSymbol>, Writable {
 	 * @return added symbol
 	 */
 	public CoffSymbol addUndefined(String name) {
+		return addUndefined(name, (byte) 0x20);
+	}
+
+	/**
+	 * Adds an undefined external symbol with an explicit COFF type.
+	 *
+	 * @param name symbol name
+	 * @param type COFF symbol type value
+	 * @return added symbol
+	 */
+	public CoffSymbol addUndefined(String name, byte type) {
 		CoffSymbol symbol = new CoffSymbol(
-				name, 0, CoffSymbol.IMAGE_SYM_UNDEFINED, (byte) 0x20, CoffStorageClass.IMAGE_SYM_CLASS_EXTERNAL);
+				name, 0, CoffSymbol.IMAGE_SYM_UNDEFINED, type, CoffStorageClass.IMAGE_SYM_CLASS_EXTERNAL);
 		add(symbol, this);
 		return symbol;
 	}
