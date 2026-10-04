@@ -26,6 +26,7 @@ net.boricj.bft.elf.machines.mips
 net.boricj.bft.elf.machines.ppc
 net.boricj.bft.elf.sections
 net.boricj.bft.image
+net.boricj.bft.image.coff
 net.boricj.bft.image.elf
 net.boricj.bft.image.relocs.priv
 net.boricj.bft.omf
