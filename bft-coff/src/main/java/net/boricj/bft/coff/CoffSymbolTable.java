@@ -359,6 +359,24 @@ public class CoffSymbolTable implements IndirectList<CoffSymbol>, Writable {
 
 	/** Function symbol with one auxiliary function-definition record. */
 	public class CoffSymbolFunction extends CoffSymbol {
+		private final int totalSize;
+
+		/**
+		 * Creates a function symbol for builder-backed COFF files.
+		 *
+		 * @param name symbol name
+		 * @param value symbol value
+		 * @param sectionNumber symbol section number
+		 * @param type symbol type
+		 * @param storageClass symbol storage class
+		 * @param totalSize function size in bytes
+		 */
+		public CoffSymbolFunction(
+				String name, int value, short sectionNumber, short type, CoffStorageClass storageClass, int totalSize) {
+			super(name, value, sectionNumber, type, storageClass);
+			this.totalSize = totalSize;
+		}
+
 		/**
 		 * Creates a function symbol from parsed record fields.
 		 *
@@ -384,6 +402,18 @@ public class CoffSymbolTable implements IndirectList<CoffSymbol>, Writable {
 
 			byte[] aux = new byte[RECORD_LENGTH];
 			dataInput.readFully(aux);
+			ByteInputStream bis = ByteInputStream.asLittleEndian(aux);
+			bis.readInt(); // TagIndex
+			this.totalSize = bis.readInt();
+		}
+
+		/**
+		 * Returns the function total size encoded in the auxiliary function-definition record.
+		 *
+		 * @return function size as an unsigned 32-bit value in the low bits
+		 */
+		public int getTotalSize() {
+			return this.totalSize;
 		}
 
 		@Override
@@ -393,7 +423,11 @@ public class CoffSymbolTable implements IndirectList<CoffSymbol>, Writable {
 
 		@Override
 		protected void writeAuxiliarySymbolRecord(DataOutput dataOutput) throws IOException {
-			dataOutput.write(new byte[RECORD_LENGTH]);
+			dataOutput.writeInt(0); // TagIndex
+			dataOutput.writeInt(totalSize); // TotalSize
+			dataOutput.writeInt(0); // PointerToLinenumber
+			dataOutput.writeInt(0); // PointerToNextFunction
+			dataOutput.writeShort(0); // Unused
 		}
 	}
 
@@ -619,6 +653,25 @@ public class CoffSymbolTable implements IndirectList<CoffSymbol>, Writable {
 	 */
 	public CoffSymbol addSection(CoffSection section) {
 		CoffSymbol symbol = new CoffSymbolSection(section);
+		add(symbol, this);
+		return symbol;
+	}
+
+	/**
+	 * Adds a function symbol with one auxiliary function-definition record containing total size.
+	 *
+	 * @param name symbol name
+	 * @param offset symbol value
+	 * @param section symbol section
+	 * @param storageClass symbol storage class
+	 * @param totalSize function size in bytes
+	 * @return added symbol
+	 */
+	public CoffSymbol addFunction(
+			String name, int offset, CoffSection section, CoffStorageClass storageClass, int totalSize) {
+		CoffSectionTable sectionTable = coff.getSections();
+		CoffSymbol symbol = new CoffSymbolFunction(
+				name, offset, (short) sectionTable.indexOf(section), (short) 0x20, storageClass, totalSize);
 		add(symbol, this);
 		return symbol;
 	}
